@@ -1,0 +1,13 @@
+build.mjs
+build-file-icons.mjs
+build-icons.mjs
+icons/product/**
+node_modules/**
+.traced/**
+screenshots/**
+*.vsix
+.gitignore
+.github/**
+PUBLISHING.md
+package-lock.json
+images/**

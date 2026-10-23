@@ -1,0 +1,111 @@
+body {
+  padding: 0;
+  margin: 0;
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+main {
+  padding: 8px 12px 12px;
+}
+.field {
+  position: relative;
+  height: 112px;
+  cursor: pointer;
+  border-bottom: 2px solid var(--vscode-sideBarSectionHeader-border, rgba(128, 128, 128, 0.35));
+  overflow: hidden;
+}
+#sprite {
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  image-rendering: pixelated;
+  transform-origin: center bottom;
+}
+.bubble {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 90%;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-editorWidget-border, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card {
+  padding-top: 10px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+#name {
+  cursor: pointer;
+}
+#name:hover {
+  text-decoration: underline;
+}
+#stage {
+  color: var(--vscode-descriptionForeground);
+}
+.bar {
+  height: 6px;
+  margin: 8px 0;
+  border-radius: 3px;
+  background: var(--vscode-input-background);
+  overflow: hidden;
+}
+#growth {
+  height: 100%;
+  width: 0;
+  background: var(--vscode-progressBar-background);
+  transition: width 0.4s ease;
+}
+#hint {
+  margin: 0;
+  color: var(--vscode-descriptionForeground);
+}
+#shell {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  image-rendering: pixelated;
+}
+.needs {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.need {
+  display: grid;
+  grid-template-columns: 3.5em 1fr 3em;
+  align-items: center;
+  gap: 8px;
+  color: var(--vscode-descriptionForeground);
+}
+.need span:last-child {
+  text-align: right;
+}
+.bar.small {
+  height: 4px;
+  margin: 0;
+}
+#food,
+#water {
+  height: 100%;
+  width: 100%;
+  transition: width 0.4s ease;
+}
+#food {
+  background: var(--vscode-charts-orange, #c4733f);
+}
+#water {
+  background: var(--vscode-charts-blue, #4d8ca0);
+}

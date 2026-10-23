@@ -1,0 +1,15 @@
+model Nest {
+  id        String   @id @default(cuid())
+  species   String
+  motherId  String
+  fatherId  String
+  createdAt DateTime @default(now())
+  eggs      Egg[]
+}
+
+model Egg {
+  id     String   @id @default(cuid())
+  nestId String
+  laidAt DateTime @default(now())
+  nest   Nest     @relation(fields: [nestId], references: [id])
+}

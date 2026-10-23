@@ -1,0 +1,44 @@
+{
+  "fonts": [
+    {
+      "id": "rosa-icons",
+      "src": [
+        {
+          "path": "./fonts/rosa-icons.woff",
+          "format": "woff"
+        }
+      ],
+      "weight": "normal",
+      "style": "normal"
+    }
+  ],
+  "iconDefinitions": {
+    "accounts-view-bar-icon": {
+      "fontCharacter": "\\e000"
+    },
+    "explorer-view-icon": {
+      "fontCharacter": "\\e002"
+    },
+    "extensions-view-icon": {
+      "fontCharacter": "\\e003"
+    },
+    "remote-explorer-view-icon": {
+      "fontCharacter": "\\e004"
+    },
+    "run-view-icon": {
+      "fontCharacter": "\\e005"
+    },
+    "search-view-icon": {
+      "fontCharacter": "\\e006"
+    },
+    "settings-view-bar-icon": {
+      "fontCharacter": "\\e007"
+    },
+    "source-control-view-icon": {
+      "fontCharacter": "\\e008"
+    },
+    "testing-view-icon": {
+      "fontCharacter": "\\e009"
+    }
+  }
+}

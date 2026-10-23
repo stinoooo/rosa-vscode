@@ -1,0 +1,162 @@
+{
+  "name": "rosa-theme",
+  "displayName": "Rosa Wildlife Reserve",
+  "description": "Warm Rosa Wildlife Reserve colors, file and product icons, and a pixel dinosaur that grows as you save.",
+  "version": "1.2.0",
+  "publisher": "rosa-realism",
+  "license": "MIT",
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#191410",
+    "theme": "dark"
+  },
+  "homepage": "https://github.com/stinoooo/rosa-vscode#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stinoooo/rosa-vscode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stinoooo/rosa-vscode/issues"
+  },
+  "pricing": "Free",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Themes",
+    "Other"
+  ],
+  "keywords": [
+    "theme",
+    "dark theme",
+    "light theme",
+    "warm",
+    "brown",
+    "cream",
+    "file icons",
+    "product icons",
+    "pixel art",
+    "pet",
+    "dinosaur",
+    "rosa"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "node build.mjs && node build-file-icons.mjs && node build-icons.mjs",
+    "package": "vsce package",
+    "screenshots": "node screenshots/take.mjs && node screenshots/sheets.mjs",
+    "publish:marketplace": "vsce publish",
+    "publish:openvsx": "ovsx publish"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "oslllo-svg-fixer": "^6.0.1",
+    "svg2ttf": "^6.1.0",
+    "svgicons2svgfont": "^16.0.0",
+    "ttf2woff": "^3.0.0",
+    "@vscode/vsce": "^4.0.0",
+    "ovsx": "^1.3.0",
+    "playwright-core": "1.64.1"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "label": "Rosa Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/rosa-dark.json"
+      },
+      {
+        "label": "Rosa Light",
+        "uiTheme": "vs",
+        "path": "./themes/rosa-light.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "rosa-files",
+        "label": "Rosa File Icons",
+        "path": "./file-icons.json"
+      }
+    ],
+    "productIconThemes": [
+      {
+        "id": "rosa-product",
+        "label": "Rosa Product Icons",
+        "path": "./product-icons.json"
+      }
+    ],
+    "icons": {
+      "rosa-sprout": {
+        "description": "Your sprout, a small sauropod",
+        "default": {
+          "fontPath": "./fonts/rosa-icons.woff",
+          "fontCharacter": "\\e000"
+        }
+      },
+      "rosa-egg": {
+        "description": "Your sprout while it is still an egg",
+        "default": {
+          "fontPath": "./fonts/rosa-icons.woff",
+          "fontCharacter": "\\e001"
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "rosa.sprout",
+          "name": "Sprout",
+          "when": "config.rosa.sprout.enabled",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "rosa.sprout.show",
+        "title": "Show my sprout",
+        "category": "Rosa"
+      },
+      {
+        "command": "rosa.sprout.rename",
+        "title": "Rename my sprout",
+        "category": "Rosa",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "rosa.sprout.newEgg",
+        "title": "Start over with a new egg",
+        "category": "Rosa"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "rosa.sprout.rename",
+          "when": "view == rosa.sprout",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Rosa",
+      "properties": {
+        "rosa.sprout.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show your sprout in the Explorer and let it grow as you save."
+        },
+        "rosa.sprout.statusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show your sprout's growth in the status bar."
+        }
+      }
+    }
+  }
+}
