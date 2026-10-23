@@ -1,61 +1,55 @@
 # Publishing
 
-The extension goes to two stores: the Visual Studio Marketplace, which VS
-Code searches, and Open VSX, which Cursor, VSCodium and Gitpod search. Both
-use the publisher name in `package.json`, `rosa-realism`.
+The extension is on the Visual Studio Marketplace, which VS Code searches,
+under the publisher `rosa-realism` (Rosa Wildlife Reserve). It can also go to
+Open VSX, which Cursor, VSCodium and Gitpod search. Both stores use the
+publisher name in `package.json`.
 
-You set up each store once. After that, a release is two commands.
+## Every release on the Marketplace
 
-## Once: the Visual Studio Marketplace
-
-1. Sign in at https://marketplace.visualstudio.com/manage with a Microsoft
-   account.
-2. Create a publisher with the ID `rosa-realism` and the display name
-   `Rosa Wildlife Reserve`. The ID has to match `publisher` in
-   `package.json`.
-3. Open https://dev.azure.com, sign in with the same account, and create an
-   organization if it asks for one.
-4. Open **User settings > Personal access tokens** and create a token:
-   - Organization: **All accessible organizations**
-   - Scopes: **Custom defined**, then **Marketplace > Manage**
-5. Copy the token and run this in this folder. Paste the token when it asks:
+1. Raise `version` in `package.json` and add a section to `CHANGELOG.md`.
+2. Build the package:
 
    ```bash
-   npx vsce login rosa-realism
+   npm install
+   npm run build
+   npm run package
    ```
+
+   That writes `rosa-theme-<version>.vsix` in this folder.
+3. Commit and push, so the pictures in the listing match the release.
+4. Open https://marketplace.visualstudio.com/manage/publishers/rosa-realism,
+   click the **...** next to the extension, choose **Update**, and upload the
+   new `.vsix`.
+
+The Marketplace checks the file first. A new version usually shows up within
+a few minutes, and VS Code updates everyone who has it installed.
+
+### Publishing from the command line instead
+
+`npm run publish:marketplace` publishes without the website, but it needs an
+Azure DevOps personal access token with the **Marketplace > Manage** scope,
+stored once with `npx vsce login rosa-realism`. Azure DevOps refuses some
+personal Microsoft accounts, so the upload above is the route that works for
+this publisher today.
 
 The token stays on your computer. Never commit it or paste it in a chat.
 
-## Once: Open VSX
+## Open VSX, once
 
 1. Sign in at https://open-vsx.org with your GitHub account.
 2. In your profile settings, connect an Eclipse account and sign the
    publisher agreement. Open VSX won't publish without it.
 3. Under **Access Tokens**, create a token and copy it.
-4. Claim the publisher name with that token:
+4. Claim the publisher name, then publish:
 
    ```bash
    npx ovsx create-namespace rosa-realism -p <your token>
+   npx ovsx publish rosa-theme-<version>.vsix -p <your token>
    ```
-
-## Every release
-
-1. Raise `version` in `package.json` and add a section to `CHANGELOG.md`.
-2. Commit and push, so the pictures in the listing match the release.
-3. Publish to both stores:
-
-   ```bash
-   npm install
-   npm run publish:marketplace
-   npx ovsx publish -p <your Open VSX token>
-   ```
-
-`vsce publish` builds the themes and icons first, through
-`vscode:prepublish`. The Marketplace takes a few minutes to show a new
-version, and Open VSX is usually quicker.
 
 ## Where your friends find it
 
 - In VS Code: search **Rosa Wildlife Reserve** in the Extensions view.
 - On the web: https://marketplace.visualstudio.com/items?itemName=rosa-realism.rosa-theme
-- In Cursor or VSCodium: https://open-vsx.org/extension/rosa-realism/rosa-theme
+- In Cursor or VSCodium, once it's on Open VSX: https://open-vsx.org/extension/rosa-realism/rosa-theme
