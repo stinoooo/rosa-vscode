@@ -1,6 +1,7 @@
 // The sprout's drawings and behavior. A drawing is a list of rows, one
 // character per pixel: o outline, g body, s spots, l belly, e eye, c cheek,
-// p back plates, w egg shell, k shell speckle, and . for nothing.
+// p back plates, w egg shell, k shell speckle, h heart, H heart shine, and
+// . for nothing.
 
 const PALETTE = {
   o: '#3b2a1f',
@@ -12,6 +13,8 @@ const PALETTE = {
   p: '#c4733f',
   w: '#f5ede5',
   k: '#d8c8b4',
+  h: '#dd6b7b',
+  H: '#f5c4cb',
 };
 
 // Every row of a drawing is padded to the widest row, so a drawing only has
@@ -152,10 +155,12 @@ const EGG_OPEN = [
   '..oooooo..',
 ];
 const SHELL = ['.o.o.o.', 'owowowo', 'owwkwwo', '.ooooo.'];
+const HEART = ['.oo.oo.', 'ohHohho', 'ohhhhho', '.ohhho.', '..oho..', '...o...'];
 
 const SPRITES = {
   egg: { rest: pad(EGG), crackOne: pad(crack(EGG, CRACK_ONE)), crackTwo: pad(crack(EGG, CRACK_TWO)), open: pad(EGG_OPEN) },
   shell: pad(SHELL),
+  heart: pad(HEART),
   stages: [null, HATCHLING, JUVENILE, ADOLESCENT, ADULT],
 };
 
@@ -178,6 +183,7 @@ if (typeof acquireVsCodeApi === 'function') {
     errors: 0,
     hunger: 1,
     thirst: 1,
+    love: 1,
   };
   let x = 20;
   let dir = 1;
@@ -222,14 +228,30 @@ if (typeof acquireVsCodeApi === 'function') {
     document.getElementById('water').style.width = percent(state.thirst);
     document.getElementById('food-value').textContent = percent(state.hunger);
     document.getElementById('water-value').textContent = percent(state.thirst);
+    document.getElementById('love').style.width = percent(state.love);
+    document.getElementById('love-value').textContent = percent(state.love);
     let hint;
     if (stage.index > 0 && state.hunger < LOW) hint = `${state.name} is hungry. Save some real work to feed it.`;
     else if (stage.index > 0 && state.thirst < LOW) hint = `${state.name} is thirsty. Clear the errors in your code to give it water.`;
+    else if (stage.index > 0 && state.love < LOW) hint = `${state.name} misses you. Click it to give it a pet.`;
     else if (state.errors > 0) hint = `${state.errors} ${state.errors === 1 ? 'error' : 'errors'} nearby. ${state.name} is keeping an eye on it.`;
     else if (stage.next) hint = `${Math.floor(stage.growth * 100)}% of the way to ${stage.next}. Saves that change a file count.`;
     else hint = `Fully grown, with ${state.saves.toLocaleString('en-US')} saves behind it.`;
     document.getElementById('hint').textContent = hint;
     document.getElementById('needs').hidden = stage.index === 0;
+  }
+
+  // A small heart that floats up from the sprout and fades.
+  function heart() {
+    const c = document.createElement('canvas');
+    c.className = 'heart';
+    draw(c, c.getContext('2d'), SPRITES.heart, 3);
+    const box = canvas.getBoundingClientRect();
+    const fieldBox = field.getBoundingClientRect();
+    c.style.left = `${box.left - fieldBox.left + box.width / 2 - 10 + (Math.random() * 24 - 12)}px`;
+    c.style.bottom = `${box.height - 6}px`;
+    field.appendChild(c);
+    setTimeout(() => c.remove(), 1400);
   }
 
   function placeShell(visible, scale) {
@@ -287,6 +309,8 @@ if (typeof acquireVsCodeApi === 'function') {
     } else if (needy()) {
       draw(canvas, ctx, sprite.sit, scale);
       if (frame % 150 === 0) say(state.hunger < LOW ? 'Tummy rumble.' : 'Parched.');
+    } else if (state.love < LOW && frame % 200 === 0) {
+      say('Could use a pet.');
     } else if (pause > 0) {
       pause -= 1;
       draw(canvas, ctx, sprite.walkA, scale);
@@ -300,6 +324,7 @@ if (typeof acquireVsCodeApi === 'function') {
       if (Math.random() < 0.02) pause = 10 + Math.floor(Math.random() * 20);
       draw(canvas, ctx, frame % 2 ? sprite.walkA : sprite.walkB, scale);
     }
+    if (!asleep && state.love >= 0.9 && frame % 70 === 0) heart();
     const lift = hop > 0 ? Math.sin((hop / 6) * Math.PI) * 10 : 0;
     if (hop > 0) hop -= 1;
     canvas.style.transform = `translate(${x}px, ${-lift}px) scaleX(${dir})`;
@@ -335,13 +360,18 @@ if (typeof acquireVsCodeApi === 'function') {
   field.addEventListener('click', () => {
     wake();
     hop = 6;
+    if (state.stage.index > 0) {
+      vscode.postMessage({ type: 'pet' });
+      heart();
+    }
     const lines =
       state.stage.index === 0
         ? ['Something moved in there.', 'Still warm.', 'A tiny tap from inside.']
         : needy()
           ? ['A hopeful look.', 'A small sigh.']
-          : ['Happy chirp.', 'Tail wag.', 'A gentle head bump.'];
-    say(lines[Math.floor(Math.random() * lines.length)]);
+          : ['Happy chirp.', 'Tail wag.', 'A gentle head bump.', 'Leans into the pet.'];
+    // After hatching the heart answers a pet, so a line only comes now and then.
+    if (state.stage.index === 0 || Math.random() < 0.3) say(lines[Math.floor(Math.random() * lines.length)]);
   });
   document.getElementById('name').addEventListener('click', () => vscode.postMessage({ type: 'rename' }));
 

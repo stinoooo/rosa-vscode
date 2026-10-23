@@ -19,6 +19,11 @@ const SAVE_COOLDOWN_MS = 60 * 1000;
 // Hunger and thirst go from 1 (full) to 0 over these spans of wall time.
 const HUNGER_EMPTIES_MS = 12 * 60 * 60 * 1000;
 const THIRST_EMPTIES_MS = 8 * 60 * 60 * 1000;
+// Love empties over a day, and every pet fills a bit of it. Pets closer
+// together than the cooldown count once.
+const LOVE_EMPTIES_MS = 24 * 60 * 60 * 1000;
+const LOVE_PER_PET = 0.1;
+const PET_COOLDOWN_MS = 2000;
 const FOOD_PER_SAVE = 0.15;
 const WATER_FOR_CLEAN_CODE = 0.6;
 const LOW = 0.2;
@@ -37,14 +42,15 @@ function stageOf(saves) {
   return { index, name: STAGES[index].name, growth, next: next?.name ?? null };
 }
 
-// Needs drop with wall time since they were last written. An egg has none,
+// Needs and love drop with wall time since they were last written. An egg has none,
 // so its needs stay full until it hatches.
 function needsAt(state, now) {
-  if (stageOf(state.saves).index === 0) return { hunger: 1, thirst: 1 };
+  if (stageOf(state.saves).index === 0) return { hunger: 1, thirst: 1, love: 1 };
   const since = Math.max(0, now - (state.needsAt ?? now));
   return {
     hunger: clamp((state.hunger ?? 1) - since / HUNGER_EMPTIES_MS),
     thirst: clamp((state.thirst ?? 1) - since / THIRST_EMPTIES_MS),
+    love: clamp((state.love ?? 1) - since / LOVE_EMPTIES_MS),
   };
 }
 
@@ -92,6 +98,16 @@ class SproutView {
     return { type: 'state', name: state.name, saves: state.saves, stage: stageOf(state.saves), errors: errorCount(), ...this.needs() };
   }
 
+  // A pet fills love once the sprout has hatched.
+  async pet() {
+    const now = Date.now();
+    if (stageOf(this.state.saves).index === 0 || now - (this.lastPet ?? 0) < PET_COOLDOWN_MS) return;
+    this.lastPet = now;
+    await this.update({ love: clamp(this.needs().love + LOVE_PER_PET) });
+    this.post(this.snapshot());
+    this.onChange?.();
+  }
+
   resolveWebviewView(view) {
     this.view = view;
     view.webview.options = { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'media')] };
@@ -119,6 +135,7 @@ class SproutView {
     <div class="needs" id="needs" hidden>
       <div class="need"><span>Food</span><div class="bar small" aria-hidden="true"><div id="food"></div></div><span id="food-value"></span></div>
       <div class="need"><span>Water</span><div class="bar small" aria-hidden="true"><div id="water"></div></div><span id="water-value"></span></div>
+      <div class="need"><span>Love</span><div class="bar small" aria-hidden="true"><div id="love"></div></div><span id="love-value"></span></div>
     </div>
     <p id="hint"></p>
   </div>
@@ -129,6 +146,7 @@ class SproutView {
     view.webview.onDidReceiveMessage((m) => {
       if (m.type === 'ready') this.post(this.snapshot());
       if (m.type === 'rename') vscode.commands.executeCommand('rosa.sprout.rename');
+      if (m.type === 'pet') this.pet();
     });
     view.onDidChangeVisibility(() => view.visible && this.post(this.snapshot()));
   }
@@ -149,15 +167,16 @@ function activate(context) {
     if (!enabled() || !config().get('statusBar', true)) return status.hide();
     const { name, saves } = sprout.state;
     const stage = stageOf(saves);
-    const { hunger, thirst } = sprout.needs();
+    const { hunger, thirst, love } = sprout.needs();
     const icon = stage.index === 0 ? '$(rosa-egg)' : '$(rosa-sprout)';
     const low = stage.index > 0 && (hunger < LOW || thirst < LOW);
     status.text = `${icon} ${low ? (hunger < LOW ? 'Hungry' : 'Thirsty') : stage.next ? `${Math.floor(stage.growth * 100)}%` : stage.name}`;
     const growth = stage.next ? `${Math.floor(stage.growth * 100)}% of the way to ${stage.next}.` : 'Fully grown.';
-    const needs = stage.index > 0 ? ` Food ${Math.round(hunger * 100)}%, water ${Math.round(thirst * 100)}%.` : '';
+    const needs = stage.index > 0 ? ` Food ${Math.round(hunger * 100)}%, water ${Math.round(thirst * 100)}%, love ${Math.round(love * 100)}%.` : '';
     status.tooltip = `${name}, ${stage.name}. ${growth}${needs}`;
     status.show();
   };
+  sprout.onChange = refreshStatus;
   // Needs drop on their own, so the status bar is checked now and then.
   const needsClock = setInterval(refreshStatus, 60 * 1000);
 
@@ -238,7 +257,7 @@ function activate(context) {
         'Start over with a new egg',
       );
       if (pick !== 'Start over with a new egg') return;
-      await sprout.update({ saves: 0, hunger: 1, thirst: 1 });
+      await sprout.update({ saves: 0, hunger: 1, thirst: 1, love: 1 });
       sprout.post(sprout.snapshot());
       refreshStatus();
     }),

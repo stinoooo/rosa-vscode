@@ -40,6 +40,8 @@ holding Ctrl+S doesn't rush it.
 
 ![The sprout as an egg, hatchling, juvenile, adolescent and adult](images/sprout-stages.png)
 
+<img src="images/sprout.png" alt="A juvenile sprout named Pebble with its food, water and love bars" width="300">
+
 | Stage | Saves |
 |---|---|
 | Egg | 0 |
@@ -54,11 +56,14 @@ hatches. Once it's out, your sprout gets hungry and thirsty:
 - **Food** empties over 12 hours. Every save that counts fills a bit of it.
 - **Water** empties over 8 hours. Clearing every error in your code fills most
   of it.
-- Below 20%, your sprout sits down and the status bar says so. It never dies
-  and never loses growth.
+- **Love** empties over a day. Click your sprout to give it a pet: a little
+  heart floats up and love fills a bit. A well-loved sprout sends hearts on
+  its own.
+- Below 20% food or water, your sprout sits down and the status bar says so.
+  Below 20% love, it asks for a pet. It never dies and never loses growth.
 
-It naps after five minutes without typing or saving, walks slower while your
-code has errors, and chirps when you click it. Its growth and needs show in
+It naps after five minutes without typing or saving, and walks slower while
+your code has errors. Its growth and needs show in
 the status bar, and VS Code keeps them across windows and restarts.
 
 | Command | What it does |
@@ -106,7 +111,7 @@ item off, or use its product icons instead.
 ```bash
 npm install
 npm run package
-code --install-extension rosa-theme-1.2.0.vsix
+code --install-extension rosa-theme-1.3.0.vsix
 ```
 
 Edit the sources, never the generated files, then run `npm run build`:

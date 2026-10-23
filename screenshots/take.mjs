@@ -119,7 +119,7 @@ async function open(files) {
 function seedSprout() {
   const db = join(userData, 'User', 'globalStorage', 'state.vscdb');
   const value = JSON.stringify({
-    'rosa.sprout': { name: 'Pebble', saves: 260, hunger: 0.82, thirst: 0.64, needsAt: Date.now() },
+    'rosa.sprout': { name: 'Pebble', saves: 260, hunger: 0.82, thirst: 0.64, love: 0.95, needsAt: Date.now() },
   });
   execFileSync('python', [
     '-c',
@@ -149,6 +149,18 @@ for (const [file, theme] of [
     await page.locator('.part.sidebar').screenshot({ path: join(images, 'file-icons.png') });
     await page.locator('.part.activitybar').screenshot({ path: join(images, 'product-icons.png') });
     const sprout = page.locator('.pane').filter({ has: page.locator('.pane-header', { hasText: 'Sprout' }) });
+    // Pet the sprout so the close-up shows a heart on its way up.
+    for (const frame of page.frames()) {
+      const field = await frame.$('#field').catch(() => null);
+      if (!field) continue;
+      // Fixed chance, so the pet shows a heart and no speech bubble.
+      await frame.evaluate(() => {
+        Math.random = () => 0.5;
+      });
+      await field.click();
+      await page.waitForTimeout(300);
+      break;
+    }
     await sprout.screenshot({ path: join(images, 'sprout.png') });
   }
   await app.close();

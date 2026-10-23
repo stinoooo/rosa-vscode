@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+
+- Your sprout has a love bar. Click it to give it a pet, and a little heart
+  floats up.
+- Love empties over a day. A well-loved sprout sends hearts on its own, and a
+  lonely one asks for a pet.
+
 ## 1.2.0
 
 - Your sprout grows from real work: a save counts when it changed the file,
