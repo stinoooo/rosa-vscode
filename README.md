@@ -127,6 +127,11 @@ Each build stops when a color drops under its contrast minimum.
 `npm run screenshots` retakes the pictures in `images/` from a real VS Code
 window with its own profile, so your setup is never touched.
 
+## Support
+
+This extension is made by stinoo for Rosa Wildlife Reserve. If you enjoy it,
+you can support the work on [Ko-fi](https://ko-fi.com/stinoo).
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

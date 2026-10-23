@@ -18,6 +18,9 @@
   "bugs": {
     "url": "https://github.com/stinoooo/rosa-vscode/issues"
   },
+  "sponsor": {
+    "url": "https://ko-fi.com/stinoo"
+  },
   "pricing": "Free",
   "engines": {
     "vscode": "^1.80.0"
@@ -50,7 +53,8 @@
     "package": "vsce package",
     "screenshots": "node screenshots/take.mjs && node screenshots/sheets.mjs",
     "publish:marketplace": "vsce publish",
-    "publish:openvsx": "ovsx publish"
+    "publish:openvsx": "ovsx publish",
+    "test": "node --test \"test/*.test.mjs\""
   },
   "devDependencies": {
     "@resvg/resvg-js": "2.6.2",

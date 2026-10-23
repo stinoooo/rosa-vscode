@@ -11,3 +11,4 @@ screenshots/**
 PUBLISHING.md
 package-lock.json
 images/**
+test/**
