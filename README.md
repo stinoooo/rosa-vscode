@@ -4,7 +4,7 @@ Warm colors, hand-drawn icons and a small dinosaur for your editor, from
 [Rosa Wildlife Reserve](https://rosarealism.com), a Path of Titans realism
 server.
 
-![Rosa Dark with the Rosa icons and a juvenile sprout in the Explorer](images/dark.png)
+![Rosa Dark with the Rosa icons and a juvenile stegosaur sprout in the Explorer](images/dark.png)
 
 ## What's inside
 
@@ -14,8 +14,9 @@ server.
   eggs for your files, a fern branch for source control, an amber drop for
   tests and a sauropod for your account.
 - **Rosa File Icons**: 54 file and folder icons that read on both themes.
-- **Your sprout**: a pixel sauropod in the Explorer that hatches and grows as
-  you work.
+- **Your sprout**: a pixel dinosaur in the Explorer that hatches and grows as
+  you work. Pick a sauropod, stegosaur, ceratopsian or raptor, and give it a
+  pattern.
 
 ![Rosa Light](images/light.png)
 
@@ -25,7 +26,8 @@ server.
 2. Run **Preferences: Color Theme** and pick **Rosa Dark** or **Rosa Light**.
 3. Run **Preferences: File Icon Theme** and pick **Rosa File Icons**.
 4. Run **Preferences: Product Icon Theme** and pick **Rosa Product Icons**.
-5. Open **Sprout** at the bottom of the Explorer to meet your egg.
+5. Find **Sprout** at the bottom of the Explorer. It opens by itself the first
+   time, so you can meet your egg.
 
 Each part works on its own, so you can keep the colors and use other icons,
 or the other way around.
@@ -40,8 +42,6 @@ holding Ctrl+S doesn't rush it.
 
 ![The sprout as an egg, hatchling, juvenile, adolescent and adult](images/sprout-stages.png)
 
-<img src="images/sprout.png" alt="A juvenile sprout named Pebble with its food, water and love bars" width="300">
-
 | Stage | Saves |
 |---|---|
 | Egg | 0 |
@@ -49,6 +49,25 @@ holding Ctrl+S doesn't rush it.
 | Juvenile | 100 |
 | Adolescent | 400 |
 | Adult | 1,000 |
+
+### Pick your dinosaur
+
+While it's still an egg, the Sprout view asks what's in it: a sauropod, a
+stegosaur, a ceratopsian or a raptor. You can change your mind until it
+hatches. If you haven't picked by then, VS Code asks as it breaks open. Every
+species has its own drawing at every stage.
+
+<img src="images/sprout-egg.png" alt="An egg in the Sprout view with the four species to pick from, the raptor selected" width="300">
+
+![The four species, each as a hatchling, juvenile, adolescent and adult](images/sprout-species.png)
+
+Once it hatches, give it a pattern: Meadow, Desert, River or Ember. You can
+change the pattern whenever you like, from the Sprout view or the palette
+button at the top of it.
+
+![A sauropod in Meadow, a stegosaur in Desert, a ceratopsian in River and a raptor in Ember](images/sprout-patterns.png)
+
+### Looking after it
 
 The egg rocks from the start, cracks as it gets close, and breaks open when it
 hatches. Once it's out, your sprout gets hungry and thirsty:
@@ -62,20 +81,30 @@ hatches. Once it's out, your sprout gets hungry and thirsty:
 - Below 20% food or water, your sprout sits down and the status bar says so.
   Below 20% love, it asks for a pet. It never dies and never loses growth.
 
+<img src="images/sprout.png" alt="A juvenile stegosaur named Pebble with a heart above it, its food, water and love bars, and the pattern picker" width="300">
+
 It naps after five minutes without typing or saving, and walks slower while
-your code has errors. Its growth and needs show in
-the status bar, and VS Code keeps them across windows and restarts.
+your code has errors. Under its bars you see how long ago it hatched, its
+saves, and your streak of days in a row with a save.
+
+You can pet it with the keyboard too: move to it with Tab and press Enter or
+Space. Its growth and needs show in the status bar. With Settings Sync on,
+your sprout comes along to your other computers.
 
 | Command | What it does |
 |---|---|
 | **Rosa: Show my sprout** | Opens the Sprout view. |
+| **Rosa: Pet my sprout** | Gives it a pet. |
+| **Rosa: Choose what's in the egg** | Picks its species, while it's still an egg. |
+| **Rosa: Change my sprout's pattern** | Gives it a new pattern. |
 | **Rosa: Rename my sprout** | Gives it a new name. You can also click its name. |
-| **Rosa: Start over with a new egg** | Sets its growth back to zero. You can't undo this. |
+| **Rosa: Start over with a new egg** | Starts again from a new egg, with a new species to pick. You can't undo this. |
 
 | Setting | Default | What it does |
 |---|---|---|
 | `rosa.sprout.enabled` | `true` | Shows your sprout and lets it grow. |
 | `rosa.sprout.statusBar` | `true` | Shows its growth in the status bar. |
+| `rosa.sprout.speechBubbles` | `true` | Shows what it says in a speech bubble. Turn it off for a quieter sprout. |
 
 ## Troubleshooting
 
@@ -111,7 +140,7 @@ item off, or use its product icons instead.
 ```bash
 npm install
 npm run package
-code --install-extension rosa-theme-1.3.0.vsix
+code --install-extension rosa-theme-1.4.0.vsix
 ```
 
 Edit the sources, never the generated files, then run `npm run build`:

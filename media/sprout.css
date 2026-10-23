@@ -1,3 +1,6 @@
+[hidden] {
+  display: none !important;
+}
 body {
   padding: 0;
   margin: 0;
@@ -135,4 +138,70 @@ main {
 }
 #water {
   background: var(--vscode-charts-blue, #4d8ca0);
+}
+.field:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 2px;
+}
+#stats {
+  margin: 6px 0 0;
+  color: var(--vscode-descriptionForeground);
+  font-size: 0.92em;
+}
+.choices {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vscode-sideBarSectionHeader-border, rgba(128, 128, 128, 0.35));
+}
+.choices h2 {
+  margin: 0 0 8px;
+  font-size: 1em;
+  font-weight: 600;
+}
+.species-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 6px;
+}
+.pattern-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.choices button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 4px 8px;
+  color: var(--vscode-foreground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font: inherit;
+  cursor: pointer;
+}
+.species-list button {
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px 4px 6px;
+}
+.choices button:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+.choices button[aria-pressed='true'] {
+  border-color: var(--vscode-focusBorder);
+}
+.choices button:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+.choices canvas {
+  image-rendering: pixelated;
+}
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.35);
 }

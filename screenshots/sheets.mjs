@@ -1,5 +1,6 @@
-// Draws the two picture sheets in images/ from the extension's own sources:
-// sprout-stages.png from media/sprout.js and icons.png from the icon drawings.
+// Draws the picture sheets in images/ from the extension's own sources:
+// sprout-stages.png, sprout-species.png and sprout-patterns.png from
+// media/sprites.js, and icons.png from the icon drawings.
 //
 // Run: npm run screenshots
 
@@ -22,14 +23,16 @@ const png = (svg, file) =>
   writeFileSync(join(images, file), new Resvg(svg, { font: { loadSystemFonts: true }, fitTo: { mode: 'zoom', value: 2 } }).render().asPng());
 
 // Sprout stages.
-const source = readFileSync(join(root, 'media', 'sprout.js'), 'utf8');
-const { SPRITES, PALETTE } = new Function(`${source};return { SPRITES, PALETTE };`)();
+const source = readFileSync(join(root, 'media', 'sprites.js'), 'utf8');
+const { SPRITES, PALETTE, SPECIES, PATTERNS, paletteFor } = new Function(
+  `${source};return { SPRITES, PALETTE, SPECIES, PATTERNS, paletteFor };`,
+)();
 const PX = 6;
-const pixels = (rows, ox, oy) => {
+const pixels = (rows, ox, oy, colors = PALETTE) => {
   let out = '';
   rows.forEach((row, y) => {
     [...row].forEach((ch, x) => {
-      if (ch !== '.') out += `<rect x="${ox + x * PX}" y="${oy + y * PX}" width="${PX}" height="${PX}" fill="${PALETTE[ch]}"/>`;
+      if (ch !== '.') out += `<rect x="${ox + x * PX}" y="${oy + y * PX}" width="${PX}" height="${PX}" fill="${colors[ch]}"/>`;
     });
   });
   return out;
@@ -56,6 +59,56 @@ png(
   `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${ground + 90}"><rect width="100%" height="100%" rx="20" fill="${BG}"/><rect x="24" y="${ground}" width="${width - 48}" height="3" rx="1.5" fill="#4a5c3d"/>${body}</svg>`,
   'sprout-stages.png',
 );
+
+// Every species at every stage, one row per species.
+{
+  const PX2 = 5;
+  const big = (rows, ox, oy, colors = PALETTE) => {
+    let out = '';
+    rows.forEach((row, y) => {
+      [...row].forEach((ch, x2) => {
+        if (ch !== '.') out += `<rect x="${ox + x2 * PX2}" y="${oy + y * PX2}" width="${PX2}" height="${PX2}" fill="${colors[ch]}"/>`;
+      });
+    });
+    return out;
+  };
+  const columns = [190, 330, 500, 700];
+  const rowHeight = 150;
+  let out = '';
+  ['Hatchling', 'Juvenile', 'Adolescent', 'Adult'].forEach((name, i) => {
+    out += `<text x="${columns[i]}" y="44" ${FONT} font-size="16" font-weight="600" fill="${MUTED}">${name}</text>`;
+  });
+  SPECIES.forEach((sp, r) => {
+    const base = 70 + rowHeight * (r + 1) - 24;
+    out += `<text x="40" y="${base - 30}" ${FONT} font-size="20" font-weight="600" fill="${INK}">${sp.name}</text>`;
+    for (let i = 1; i <= 4; i++) {
+      const rows = sp.stages[i].walkA;
+      out += big(rows, columns[i - 1], base - rows.length * PX2);
+    }
+    out += `<rect x="180" y="${base}" width="720" height="2" rx="1" fill="#4a5c3d"/>`;
+  });
+  const h = 70 + rowHeight * SPECIES.length + 20;
+  png(`<svg xmlns="http://www.w3.org/2000/svg" width="940" height="${h}"><rect width="100%" height="100%" rx="20" fill="${BG}"/>${out}</svg>`, 'sprout-species.png');
+}
+
+// The four patterns, each on a different adult.
+{
+  let out = '';
+  let px = 40;
+  const ground = 170;
+  PATTERNS.forEach((pattern, i) => {
+    const rows = SPECIES[i % SPECIES.length].stages[4].walkA;
+    const w = rows[0].length * PX;
+    out += pixels(rows, px, ground - rows.length * PX, paletteFor(pattern.id));
+    out += `<text x="${px + w / 2}" y="${ground + 36}" text-anchor="middle" ${FONT} font-size="18" font-weight="600" fill="${INK}">${pattern.name}</text>`;
+    px += w + 48;
+  });
+  const w = px - 8;
+  png(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${ground + 70}"><rect width="100%" height="100%" rx="20" fill="${BG}"/><rect x="24" y="${ground}" width="${w - 48}" height="3" rx="1.5" fill="#4a5c3d"/>${out}</svg>`,
+    'sprout-patterns.png',
+  );
+}
 
 // Icons: the product icons with what they stand for, then a row of file icons.
 const PRODUCT = [

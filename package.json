@@ -2,7 +2,7 @@
   "name": "rosa-theme",
   "displayName": "Rosa Wildlife Reserve",
   "description": "Warm Rosa Wildlife Reserve colors, file and product icons, and a pixel dinosaur that grows as you save.",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "publisher": "rosa-realism",
   "license": "MIT",
   "icon": "icon.png",
@@ -127,6 +127,22 @@
         "category": "Rosa"
       },
       {
+        "command": "rosa.sprout.pet",
+        "title": "Pet my sprout",
+        "category": "Rosa"
+      },
+      {
+        "command": "rosa.sprout.chooseSpecies",
+        "title": "Choose what's in the egg",
+        "category": "Rosa"
+      },
+      {
+        "command": "rosa.sprout.choosePattern",
+        "title": "Change my sprout's pattern",
+        "category": "Rosa",
+        "icon": "$(symbol-color)"
+      },
+      {
         "command": "rosa.sprout.rename",
         "title": "Rename my sprout",
         "category": "Rosa",
@@ -141,9 +157,14 @@
     "menus": {
       "view/title": [
         {
+          "command": "rosa.sprout.choosePattern",
+          "when": "view == rosa.sprout",
+          "group": "navigation@1"
+        },
+        {
           "command": "rosa.sprout.rename",
           "when": "view == rosa.sprout",
-          "group": "navigation"
+          "group": "navigation@2"
         }
       ]
     },
@@ -159,6 +180,11 @@
           "type": "boolean",
           "default": true,
           "description": "Show your sprout's growth in the status bar."
+        },
+        "rosa.sprout.speechBubbles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show what your sprout says in a speech bubble. Turn it off for a quieter sprout."
         }
       }
     }

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.4.0
+
+- Pick your dinosaur: while it's an egg, choose a sauropod, stegosaur,
+  ceratopsian or raptor. Each one has its own drawing at every stage.
+- Give your sprout a pattern after it hatches: Meadow, Desert, River or Ember.
+- Under its bars you now see how long ago it hatched, its saves, and your
+  streak of days in a row with a save.
+- With Settings Sync on, your sprout comes along to your other computers.
+- The Sprout view opens by itself the first time, instead of starting folded.
+- Pet your sprout with the keyboard: Tab to it and press Enter or Space.
+- A new setting turns off the speech bubbles.
+- The sprout stops animating while its view is hidden, to spare your battery.
+
 ## 1.3.0
 
 - Your sprout has a love bar. Click it to give it a pet, and a little heart

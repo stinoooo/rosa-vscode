@@ -1,10 +1,14 @@
 // Rosa sprout: a small dinosaur in the Explorer that grows as you save.
-// Growth follows the Path of Titans stages. The state lives in globalState,
-// so the sprout is the same in every window and survives a restart.
+// Growth follows the Path of Titans stages. The state lives in globalState
+// and travels with Settings Sync, so the sprout is the same in every window
+// and on every computer.
 
+const fs = require('fs');
+const path = require('path');
 const vscode = require('vscode');
 
 const STATE_KEY = 'rosa.sprout';
+const REVEALED_KEY = 'rosa.sprout.revealed';
 const STAGES = [
   { name: 'Egg', from: 0 },
   { name: 'Hatchling', from: 10 },
@@ -12,6 +16,12 @@ const STAGES = [
   { name: 'Adolescent', from: 400 },
   { name: 'Adult', from: 1000 },
 ];
+
+// The species and pattern lists live with the drawings, so the pickers here
+// and in the view always offer the same choices.
+const { SPECIES, PATTERNS } = new Function(
+  `${fs.readFileSync(path.join(__dirname, 'media', 'sprites.js'), 'utf8')};return { SPECIES, PATTERNS };`,
+)();
 
 // A save counts once the file changed, and one file counts at most once a
 // minute, so holding Ctrl+S or auto save does not farm growth.
@@ -42,8 +52,8 @@ function stageOf(saves) {
   return { index, name: STAGES[index].name, growth, next: next?.name ?? null };
 }
 
-// Needs and love drop with wall time since they were last written. An egg has none,
-// so its needs stay full until it hatches.
+// Needs and love drop with wall time since they were last written. An egg
+// has none, so its needs stay full until it hatches.
 function needsAt(state, now) {
   if (stageOf(state.saves).index === 0) return { hunger: 1, thirst: 1, love: 1 };
   const since = Math.max(0, now - (state.needsAt ?? now));
@@ -59,6 +69,22 @@ function needsAt(state, now) {
 function countsAsSave(wasDirty, lastCounted, now) {
   return wasDirty && (lastCounted === undefined || now - lastCounted >= SAVE_COOLDOWN_MS);
 }
+
+// The local calendar day of a moment, like 2026-10-23.
+function dayOf(ms) {
+  const d = new Date(ms);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// The streak counts days in a row with at least one counted save.
+function nextStreak(lastDay, streak, today) {
+  if (lastDay === today) return { streak: streak || 1, lastSaveDay: today };
+  const yesterday = dayOf(new Date(`${today}T12:00:00`).getTime() - 24 * 60 * 60 * 1000);
+  return { streak: lastDay === yesterday ? (streak || 0) + 1 : 1, lastSaveDay: today };
+}
+
+const knownSpecies = (id) => SPECIES.some((s) => s.id === id);
+const knownPattern = (id) => PATTERNS.some((p) => p.id === id);
 
 function errorCount() {
   let errors = 0;
@@ -95,7 +121,25 @@ class SproutView {
 
   snapshot() {
     const state = this.state;
-    return { type: 'state', name: state.name, saves: state.saves, stage: stageOf(state.saves), errors: errorCount(), ...this.needs() };
+    return {
+      type: 'state',
+      name: state.name,
+      saves: state.saves,
+      stage: stageOf(state.saves),
+      errors: errorCount(),
+      species: knownSpecies(state.species) ? state.species : 'sauropod',
+      speciesChosen: knownSpecies(state.species),
+      pattern: knownPattern(state.pattern) ? state.pattern : 'meadow',
+      hatchedAt: state.hatchedAt ?? null,
+      streak: state.streak ?? 0,
+      bubbles: vscode.workspace.getConfiguration('rosa.sprout').get('speechBubbles', true),
+      ...this.needs(),
+    };
+  }
+
+  refresh() {
+    this.post(this.snapshot());
+    this.onChange?.();
   }
 
   // A pet fills love once the sprout has hatched.
@@ -104,15 +148,30 @@ class SproutView {
     if (stageOf(this.state.saves).index === 0 || now - (this.lastPet ?? 0) < PET_COOLDOWN_MS) return;
     this.lastPet = now;
     await this.update({ love: clamp(this.needs().love + LOVE_PER_PET) });
-    this.post(this.snapshot());
-    this.onChange?.();
+    this.refresh();
+  }
+
+  // The species is picked while it is an egg, and set for good at hatching.
+  async setSpecies(id) {
+    if (!knownSpecies(id)) return;
+    if (stageOf(this.state.saves).index > 0) {
+      vscode.window.showInformationMessage(`${this.state.name} has hatched, so its species is set. You can still change its pattern.`);
+      return;
+    }
+    await this.update({ species: id });
+    this.refresh();
+  }
+
+  async setPattern(id) {
+    if (!knownPattern(id)) return;
+    await this.update({ pattern: id });
+    this.refresh();
   }
 
   resolveWebviewView(view) {
     this.view = view;
+    const media = (file) => view.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'media', file));
     view.webview.options = { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'media')] };
-    const script = view.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'media', 'sprout.js'));
-    const style = view.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'media', 'sprout.css'));
     const nonce = [...Array(24)].map(() => Math.random().toString(36)[2]).join('');
     view.webview.html = `<!doctype html>
 <html lang="en">
@@ -120,17 +179,17 @@ class SproutView {
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${view.webview.cspSource}; script-src 'nonce-${nonce}';">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="${style}">
+<link rel="stylesheet" href="${media('sprout.css')}">
 </head>
 <body>
 <main>
-  <div class="field" id="field" role="img" aria-label="Your sprout">
+  <div class="field" id="field" role="button" tabindex="0" aria-label="Your sprout">
     <canvas id="shell" hidden></canvas>
     <canvas id="sprite"></canvas>
-    <div class="bubble" id="bubble" hidden></div>
+    <div class="bubble" id="bubble" role="status" aria-live="polite" hidden></div>
   </div>
   <div class="card">
-    <div class="row"><strong id="name">Sprout</strong><span id="stage"></span></div>
+    <div class="row"><strong id="name" title="Rename your sprout">Sprout</strong><span id="stage"></span></div>
     <div class="bar" aria-hidden="true"><div id="growth"></div></div>
     <div class="needs" id="needs" hidden>
       <div class="need"><span>Food</span><div class="bar small" aria-hidden="true"><div id="food"></div></div><span id="food-value"></span></div>
@@ -138,18 +197,45 @@ class SproutView {
       <div class="need"><span>Love</span><div class="bar small" aria-hidden="true"><div id="love"></div></div><span id="love-value"></span></div>
     </div>
     <p id="hint"></p>
+    <p id="stats"></p>
   </div>
+  <section class="choices" id="species" hidden>
+    <h2 id="species-title">What's in the egg?</h2>
+    <div class="species-list" id="species-list"></div>
+  </section>
+  <section class="choices" id="patterns" hidden>
+    <h2>Pattern</h2>
+    <div class="pattern-list" id="pattern-list"></div>
+  </section>
 </main>
-<script nonce="${nonce}" src="${script}"></script>
+<script nonce="${nonce}" src="${media('sprites.js')}"></script>
+<script nonce="${nonce}" src="${media('sprout.js')}"></script>
 </body>
 </html>`;
     view.webview.onDidReceiveMessage((m) => {
-      if (m.type === 'ready') this.post(this.snapshot());
+      if (m.type === 'ready') {
+        this.post(this.snapshot());
+        this.post({ type: 'visible', visible: view.visible });
+      }
       if (m.type === 'rename') vscode.commands.executeCommand('rosa.sprout.rename');
       if (m.type === 'pet') this.pet();
+      if (m.type === 'species') this.setSpecies(m.id);
+      if (m.type === 'pattern') this.setPattern(m.id);
     });
-    view.onDidChangeVisibility(() => view.visible && this.post(this.snapshot()));
+    // The animation pauses while the view is hidden, to spare the battery.
+    view.onDidChangeVisibility(() => {
+      this.post({ type: 'visible', visible: view.visible });
+      if (view.visible) this.post(this.snapshot());
+    });
   }
+}
+
+async function pickSpecies(title) {
+  const pick = await vscode.window.showQuickPick(
+    SPECIES.map((s) => ({ label: s.name, id: s.id })),
+    { title, placeHolder: 'Pick a species. It is set for good once the egg hatches.' },
+  );
+  return pick?.id;
 }
 
 function activate(context) {
@@ -160,6 +246,12 @@ function activate(context) {
   const lastCounted = new Map();
   let lastActivePost = 0;
   let lastErrors = errorCount();
+
+  // Settings Sync carries the sprout to your other computers.
+  context.globalState.setKeysForSync([STATE_KEY]);
+
+  // A sprout that hatched before ages were kept counts its age from now.
+  if (stageOf(sprout.state.saves).index > 0 && !sprout.state.hatchedAt) sprout.update({ hatchedAt: Date.now() });
 
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0);
   status.command = 'rosa.sprout.show';
@@ -199,15 +291,27 @@ function activate(context) {
       lastCounted.set(key, now);
       const before = stageOf(sprout.state.saves);
       const fed = before.index > 0 ? clamp(sprout.needs().hunger + FOOD_PER_SAVE) : 1;
-      const state = await sprout.update({ saves: sprout.state.saves + 1, hunger: fed });
+      const saves = sprout.state.saves + 1;
+      const hatches = before.index === 0 && stageOf(saves).index > 0;
+      const state = await sprout.update({
+        saves,
+        hunger: fed,
+        ...nextStreak(sprout.state.lastSaveDay, sprout.state.streak, dayOf(now)),
+        ...(hatches ? { hatchedAt: now } : {}),
+      });
       const after = stageOf(state.saves);
       sprout.post({ type: 'saved' });
-      sprout.post(sprout.snapshot());
-      refreshStatus();
+      sprout.refresh();
       if (after.index > before.index) {
         const line = after.index === 1 ? `${state.name} hatched!` : `${state.name} grew into a ${after.name.toLowerCase()}.`;
         sprout.post({ type: 'grew', index: after.index, line });
         vscode.window.setStatusBarMessage(line, 6000);
+      }
+      // An egg that hatches before anyone picked asks what came out.
+      if (hatches && !knownSpecies(state.species)) {
+        const id = (await pickSpecies(`${state.name} is hatching! What came out of the egg?`)) ?? 'sauropod';
+        await sprout.update({ species: id });
+        sprout.refresh();
       }
     }),
 
@@ -224,18 +328,37 @@ function activate(context) {
       // Clearing every error gives the sprout water.
       if (lastErrors > 0 && errors === 0 && enabled() && stageOf(sprout.state.saves).index > 0) {
         await sprout.update({ thirst: clamp(sprout.needs().thirst + WATER_FOR_CLEAN_CODE) });
-        sprout.post(sprout.snapshot());
-        refreshStatus();
+        sprout.refresh();
       }
       lastErrors = errors;
       sprout.post({ type: 'errors', errors });
     }),
 
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('rosa.sprout')) refreshStatus();
+      if (e.affectsConfiguration('rosa.sprout')) sprout.refresh();
     }),
 
     vscode.commands.registerCommand('rosa.sprout.show', () => vscode.commands.executeCommand('rosa.sprout.focus')),
+
+    vscode.commands.registerCommand('rosa.sprout.pet', () => sprout.pet()),
+
+    vscode.commands.registerCommand('rosa.sprout.chooseSpecies', async () => {
+      if (stageOf(sprout.state.saves).index > 0) {
+        vscode.window.showInformationMessage(`${sprout.state.name} has hatched, so its species is set. You can still change its pattern.`);
+        return;
+      }
+      const id = await pickSpecies("What's in the egg?");
+      if (id) await sprout.setSpecies(id);
+    }),
+
+    vscode.commands.registerCommand('rosa.sprout.choosePattern', async () => {
+      const current = sprout.snapshot().pattern;
+      const pick = await vscode.window.showQuickPick(
+        PATTERNS.map((p) => ({ label: p.name, description: p.id === current ? 'Current' : undefined, id: p.id })),
+        { title: `Pick a pattern for ${sprout.state.name}` },
+      );
+      if (pick) await sprout.setPattern(pick.id);
+    }),
 
     vscode.commands.registerCommand('rosa.sprout.rename', async () => {
       const name = await vscode.window.showInputBox({
@@ -246,8 +369,7 @@ function activate(context) {
       });
       if (!name) return;
       await sprout.update({ name: name.trim() });
-      sprout.post(sprout.snapshot());
-      refreshStatus();
+      sprout.refresh();
     }),
 
     vscode.commands.registerCommand('rosa.sprout.newEgg', async () => {
@@ -257,15 +379,22 @@ function activate(context) {
         'Start over with a new egg',
       );
       if (pick !== 'Start over with a new egg') return;
-      await sprout.update({ saves: 0, hunger: 1, thirst: 1, love: 1 });
-      sprout.post(sprout.snapshot());
-      refreshStatus();
+      await sprout.update({ saves: 0, hunger: 1, thirst: 1, love: 1, species: undefined, hatchedAt: undefined, streak: 0, lastSaveDay: undefined });
+      sprout.refresh();
     }),
   );
 
   refreshStatus();
+
+  // VS Code starts a new view folded, so the sprout opens itself once.
+  if (enabled() && !context.globalState.get(REVEALED_KEY)) {
+    context.globalState.update(REVEALED_KEY, true);
+    vscode.commands.executeCommand('rosa.sprout.focus').then(() =>
+      vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup'),
+    );
+  }
 }
 
 function deactivate() {}
 
-module.exports = { activate, deactivate, stageOf, needsAt, countsAsSave };
+module.exports = { activate, deactivate, stageOf, needsAt, countsAsSave, nextStreak, dayOf };

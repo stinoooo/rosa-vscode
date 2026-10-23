@@ -30,7 +30,7 @@ function cliScript() {
   return named ? join(dirname(CODE_EXE), ...named[1].split('\\')) : join(dirname(CODE_EXE), 'resources', 'app', 'out', 'cli.js');
 }
 const WIDTH = 1600;
-const HEIGHT = 1000;
+const HEIGHT = 1100;
 
 if (!existsSync(vsix)) throw new Error(`Build ${vsix} first with npm run package.`);
 
@@ -104,22 +104,28 @@ async function open(files) {
   const header = page.locator('.pane-header', { hasText: 'Sprout' });
   if ((await header.getAttribute('aria-expanded')) !== 'true') await header.click();
   await page.waitForTimeout(1000);
-  // Give the Sprout view room by dragging the edge above it upward.
-  const box = await header.boundingBox();
-  await page.mouse.move(box.x + box.width / 2, box.y - 1);
-  await page.mouse.down();
-  await page.mouse.move(box.x + box.width / 2, box.y - 160, { steps: 8 });
-  await page.mouse.up();
-  await page.mouse.move(1000, 600);
-  await page.waitForTimeout(5000);
+  await growSprout(page, 110);
+  await page.waitForTimeout(4000);
   return { app, page };
 }
 
-// Seeds the sprout as a grown juvenile, so the Explorer shows more than an egg.
-function seedSprout() {
+// Gives the Sprout view more room by dragging the edge above it upward.
+async function growSprout(page, by) {
+  const box = await page.locator('.pane-header', { hasText: 'Sprout' }).boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y - 1);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y - by, { steps: 8 });
+  await page.mouse.up();
+  await page.mouse.move(1000, 600);
+  await page.waitForTimeout(800);
+}
+
+// Seeds the sprout, so the Explorer shows the state a picture needs.
+function seedSprout(sprout) {
   const db = join(userData, 'User', 'globalStorage', 'state.vscdb');
   const value = JSON.stringify({
-    'rosa.sprout': { name: 'Pebble', saves: 260, hunger: 0.82, thirst: 0.64, love: 0.95, needsAt: Date.now() },
+    'rosa.sprout': sprout,
+    'rosa.sprout.revealed': true,
   });
   execFileSync('python', [
     '-c',
@@ -136,7 +142,19 @@ settings('Rosa Dark');
   const { app } = await open([]);
   await app.close();
 }
-seedSprout();
+// A grown stegosaur for the main pictures.
+seedSprout({
+  name: 'Pebble',
+  saves: 260,
+  species: 'stegosaur',
+  pattern: 'meadow',
+  hunger: 0.82,
+  thirst: 0.64,
+  love: 0.95,
+  needsAt: Date.now(),
+  hatchedAt: Date.now() - 12 * 24 * 60 * 60 * 1000,
+  streak: 6,
+});
 
 for (const [file, theme] of [
   ['dark.png', 'Rosa Dark'],
@@ -149,6 +167,7 @@ for (const [file, theme] of [
     await page.locator('.part.sidebar').screenshot({ path: join(images, 'file-icons.png') });
     await page.locator('.part.activitybar').screenshot({ path: join(images, 'product-icons.png') });
     const sprout = page.locator('.pane').filter({ has: page.locator('.pane-header', { hasText: 'Sprout' }) });
+    await growSprout(page, 260);
     // Pet the sprout so the close-up shows a heart on its way up.
     for (const frame of page.frames()) {
       const field = await frame.$('#field').catch(() => null);
@@ -163,6 +182,16 @@ for (const [file, theme] of [
     }
     await sprout.screenshot({ path: join(images, 'sprout.png') });
   }
+  await app.close();
+}
+// An egg close to hatching, with the species picker.
+seedSprout({ name: 'Pebble', saves: 6, species: 'raptor' });
+{
+  settings('Rosa Dark');
+  const { app, page } = await open(['src/nesting/hatch.ts']);
+  const sprout = page.locator('.pane').filter({ has: page.locator('.pane-header', { hasText: 'Sprout' }) });
+  await growSprout(page, 260);
+  await sprout.screenshot({ path: join(images, 'sprout-egg.png') });
   await app.close();
 }
 console.log('Screenshots written to images/');

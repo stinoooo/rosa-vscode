@@ -8,7 +8,11 @@ import { test } from 'node:test';
 const require = createRequire(import.meta.url);
 const load = Module._load;
 Module._load = (request, ...rest) => (request === 'vscode' ? {} : load(request, ...rest));
-const { stageOf, needsAt, countsAsSave } = require('../extension.js');
+const { stageOf, needsAt, countsAsSave, nextStreak } = require('../extension.js');
+const { readFileSync } = require('node:fs');
+const { SPECIES, PATTERNS, SPRITES } = new Function(
+  `${readFileSync(new URL('../media/sprites.js', import.meta.url), 'utf8')};return { SPECIES, PATTERNS, SPRITES };`,
+)();
 Module._load = load;
 
 const HOUR = 60 * 60 * 1000;
@@ -43,4 +47,31 @@ test('food, water and love empty over 12, 8 and 24 hours', () => {
 
 test('a sprout from before needs existed starts full', () => {
   assert.deepEqual(needsAt({ saves: 250 }, Date.now()), { hunger: 1, thirst: 1, love: 1 });
+});
+
+test('the streak grows on days in a row and starts over after a gap', () => {
+  assert.deepEqual(nextStreak(undefined, 0, '2026-10-23'), { streak: 1, lastSaveDay: '2026-10-23' });
+  assert.deepEqual(nextStreak('2026-10-23', 1, '2026-10-23'), { streak: 1, lastSaveDay: '2026-10-23' });
+  assert.deepEqual(nextStreak('2026-10-23', 1, '2026-10-24'), { streak: 2, lastSaveDay: '2026-10-24' });
+  assert.deepEqual(nextStreak('2026-10-31', 5, '2026-11-01'), { streak: 6, lastSaveDay: '2026-11-01' });
+  assert.deepEqual(nextStreak('2026-10-20', 9, '2026-10-24'), { streak: 1, lastSaveDay: '2026-10-24' });
+});
+
+test('every species has every stage and pose, with rows of one width', () => {
+  assert.deepEqual(SPECIES.map((s) => s.id), ['sauropod', 'stegosaur', 'ceratopsian', 'raptor']);
+  for (const species of SPECIES) {
+    for (let i = 1; i <= 4; i++) {
+      for (const pose of ['walkA', 'walkB', 'sit', 'sleep']) {
+        const rows = species.stages[i][pose];
+        assert.ok(rows.length > 0, `${species.id} ${i} ${pose}`);
+        assert.ok(rows.every((r) => r.length === rows[0].length), `${species.id} ${i} ${pose} has uneven rows`);
+        assert.equal(species.stages[i].walkA.length, species.stages[i].sit.length, `${species.id} ${i} sits at another height`);
+      }
+    }
+  }
+  assert.equal(SPRITES.stages, SPECIES[0].stages);
+});
+
+test('every pattern sets the colors a drawing uses', () => {
+  for (const pattern of PATTERNS) assert.deepEqual(Object.keys(pattern.colors).sort(), ['c', 'g', 'l', 'p', 's']);
 });

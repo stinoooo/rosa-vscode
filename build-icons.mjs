@@ -84,7 +84,7 @@ pkg.contributes.icons['rosa-egg'].default.fontCharacter = glyphCode(names.indexO
 writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
 
 // icon.png: the adult sprout on a cream tile.
-const sproutSource = readFileSync(join(here, 'media', 'sprout.js'), 'utf8');
+const sproutSource = readFileSync(join(here, 'media', 'sprites.js'), 'utf8');
 const { SPRITES, PALETTE } = new Function(`${sproutSource};return { SPRITES, PALETTE };`)();
 const adult = SPRITES.stages[4].walkA;
 const px = 4;
