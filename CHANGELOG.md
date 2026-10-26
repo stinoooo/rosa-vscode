@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.0
+
+- Show your sprout at an earlier stage: once it has grown past a stage, pick
+  that stage under Look in the Sprout view, or with Rosa: Show my sprout at an
+  earlier stage. It keeps growing underneath, and picking its real stage
+  brings its own look back.
+
 ## 1.4.0
 
 - Pick your dinosaur: while it's an egg, choose a sauropod, stegosaur,

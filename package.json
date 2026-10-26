@@ -2,7 +2,7 @@
   "name": "rosa-theme",
   "displayName": "Rosa Wildlife Reserve",
   "description": "Warm Rosa Wildlife Reserve colors, file and product icons, and a pixel dinosaur that grows as you save.",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "publisher": "rosa-realism",
   "license": "MIT",
   "icon": "icon.png",
@@ -143,6 +143,12 @@
         "icon": "$(symbol-color)"
       },
       {
+        "command": "rosa.sprout.chooseLook",
+        "title": "Show my sprout at an earlier stage",
+        "category": "Rosa",
+        "icon": "$(history)"
+      },
+      {
         "command": "rosa.sprout.rename",
         "title": "Rename my sprout",
         "category": "Rosa",
@@ -162,9 +168,14 @@
           "group": "navigation@1"
         },
         {
-          "command": "rosa.sprout.rename",
+          "command": "rosa.sprout.chooseLook",
           "when": "view == rosa.sprout",
           "group": "navigation@2"
+        },
+        {
+          "command": "rosa.sprout.rename",
+          "when": "view == rosa.sprout",
+          "group": "navigation@3"
         }
       ]
     },
