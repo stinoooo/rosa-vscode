@@ -8,7 +8,7 @@ import { test } from 'node:test';
 const require = createRequire(import.meta.url);
 const load = Module._load;
 Module._load = (request, ...rest) => (request === 'vscode' ? {} : load(request, ...rest));
-const { stageOf, needsAt, countsAsSave, nextStreak } = require('../extension.js');
+const { stageOf, shownStage, needsAt, countsAsSave, nextStreak } = require('../extension.js');
 const { readFileSync } = require('node:fs');
 const { SPECIES, PATTERNS, SPRITES } = new Function(
   `${readFileSync(new URL('../media/sprites.js', import.meta.url), 'utf8')};return { SPECIES, PATTERNS, SPRITES };`,
@@ -24,6 +24,16 @@ test('stages start at 0, 10, 100, 400 and 1,000 saves', () => {
   ]);
   close(stageOf(5).growth, 0.5);
   assert.equal(stageOf(5000).next, null);
+});
+
+test('a sprout looks like any stage it has reached, and its real stage otherwise', () => {
+  assert.equal(shownStage({ saves: 1500 }), 4);
+  assert.equal(shownStage({ saves: 1500, look: 1 }), 1);
+  assert.equal(shownStage({ saves: 450, look: 3 }), 3);
+  assert.equal(shownStage({ saves: 150, look: 3 }), 2, 'a stage it has not reached');
+  assert.equal(shownStage({ saves: 5, look: 1 }), 0, 'an egg is always an egg');
+  assert.equal(shownStage({ saves: 1500, look: 0 }), 4, 'never back to the egg');
+  assert.equal(shownStage({ saves: 1500, look: 'adult' }), 4);
 });
 
 test('a save counts only after a change, once a minute per file', () => {

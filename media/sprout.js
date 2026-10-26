@@ -16,6 +16,7 @@ let state = {
   name: 'Sprout',
   saves: 0,
   stage: { index: 0, name: 'Egg', growth: 0, next: 'Hatchling' },
+  look: 0,
   errors: 0,
   hunger: 1,
   thirst: 1,
@@ -64,6 +65,11 @@ function say(text, ms = 2600) {
 const percent = (v) => `${Math.round(v * 100)}%`;
 const needy = () => state.hunger < LOW || state.thirst < LOW;
 const stages = () => SPRITES.species[state.species] ?? SPRITES.stages;
+const LOOK_NAMES = ['egg', 'hatchling', 'juvenile', 'adolescent', 'adult'];
+const lookName = () => {
+  const name = LOOK_NAMES[state.look] ?? LOOK_NAMES[state.stage.index];
+  return `${/^[aeiou]/.test(name) ? 'an' : 'a'} ${name}`;
+};
 
 function age() {
   if (!state.hatchedAt) return null;
@@ -82,6 +88,15 @@ function buildChoices() {
     button.addEventListener('click', () => vscode.postMessage({ type: 'species', id: s.id }));
     speciesList.appendChild(button);
   }
+  const lookList = document.getElementById('look-list');
+  ['Hatchling', 'Juvenile', 'Adolescent', 'Adult'].forEach((name, i) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.look = String(i + 1);
+    button.innerHTML = `<canvas aria-hidden="true"></canvas><span>${name}</span>`;
+    button.addEventListener('click', () => vscode.postMessage({ type: 'look', index: i + 1 }));
+    lookList.appendChild(button);
+  });
   const patternList = document.getElementById('pattern-list');
   for (const p of PATTERNS) {
     const button = document.createElement('button');
@@ -94,13 +109,16 @@ function buildChoices() {
   }
 }
 
-// The species buttons while it is an egg, the pattern buttons after.
+// The species buttons while it is an egg, the look and pattern buttons after.
+// A look only shows once there are two stages to pick from.
 function renderChoices() {
   const egg = state.stage.index === 0;
   const species = document.getElementById('species');
   const patterns = document.getElementById('patterns');
+  const looks = document.getElementById('looks');
   species.hidden = !egg;
   patterns.hidden = egg;
+  looks.hidden = state.stage.index < 2;
   document.getElementById('species-title').textContent = state.speciesChosen
     ? `${speciesOf(state.species).name} egg. You can still change your mind.`
     : "What's in the egg?";
@@ -109,6 +127,14 @@ function renderChoices() {
     button.setAttribute('aria-pressed', String(state.speciesChosen && id === state.species));
     const preview = button.querySelector('canvas');
     draw(preview, preview.getContext('2d'), SPRITES.species[id][4].walkA, 2, palette);
+  });
+  looks.querySelectorAll('button').forEach((button) => {
+    const index = Number(button.dataset.look);
+    button.hidden = index > state.stage.index;
+    button.setAttribute('aria-pressed', String(index === state.look));
+    if (button.hidden) return;
+    const preview = button.querySelector('canvas');
+    draw(preview, preview.getContext('2d'), stages()[index].walkA, 2, palette);
   });
   patterns.querySelectorAll('button').forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.pattern === state.pattern));
@@ -133,6 +159,8 @@ function render() {
   else if (stage.index > 0 && state.thirst < LOW) hint = `${state.name} is thirsty. Clear the errors in your code to give it water.`;
   else if (stage.index > 0 && state.love < LOW) hint = `${state.name} misses you. Click it to give it a pet.`;
   else if (state.errors > 0) hint = `${state.errors} ${state.errors === 1 ? 'error' : 'errors'} nearby. ${state.name} is keeping an eye on it.`;
+  else if (state.look < stage.index && stage.next) hint = `Looks like ${lookName()}, and still ${Math.floor(stage.growth * 100)}% of the way to ${stage.next}.`;
+  else if (state.look < stage.index) hint = `Looks like ${lookName()}. Fully grown underneath, with ${state.saves.toLocaleString('en-US')} saves.`;
   else if (stage.next) hint = `${Math.floor(stage.growth * 100)}% of the way to ${stage.next}. Saves that change a file count.`;
   else hint = `Fully grown, with ${state.saves.toLocaleString('en-US')} saves behind it.`;
   document.getElementById('hint').textContent = hint;
@@ -204,7 +232,7 @@ function tick() {
     return;
   }
 
-  const sprite = stages()[index];
+  const sprite = stages()[state.look || index];
   const asleep = Date.now() - lastActive > IDLE_MS;
   if (asleep) {
     draw(canvas, ctx, sprite.sleep, SCALE);

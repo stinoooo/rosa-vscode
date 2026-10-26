@@ -67,6 +67,16 @@ button at the top of it.
 
 ![A sauropod in Meadow, a stegosaur in Desert, a ceratopsian in River and a raptor in Ember](images/sprout-patterns.png)
 
+### Show it at an earlier stage
+
+Miss your tiny hatchling? Once your sprout has grown past a stage, you can
+show it at that stage again, whenever you like. Pick a look under **Look** in
+the Sprout view, or with the history button at the top of it. It keeps
+growing underneath, so nothing is lost. Pick its real stage to see it as it
+is again.
+
+<img src="images/sprout-look.png" alt="An adult stegosaur shown as a hatchling, with the look picker listing every stage it has reached" width="300">
+
 ### Looking after it
 
 The egg rocks from the start, cracks as it gets close, and breaks open when it
@@ -97,6 +107,7 @@ your sprout comes along to your other computers.
 | **Rosa: Pet my sprout** | Gives it a pet. |
 | **Rosa: Choose what's in the egg** | Picks its species, while it's still an egg. |
 | **Rosa: Change my sprout's pattern** | Gives it a new pattern. |
+| **Rosa: Show my sprout at an earlier stage** | Shows it at any stage it has reached. Pick its real stage to go back. |
 | **Rosa: Rename my sprout** | Gives it a new name. You can also click its name. |
 | **Rosa: Start over with a new egg** | Starts again from a new egg, with a new species to pick. You can't undo this. |
 

@@ -194,4 +194,26 @@ seedSprout({ name: 'Pebble', saves: 6, species: 'raptor' });
   await sprout.screenshot({ path: join(images, 'sprout-egg.png') });
   await app.close();
 }
+// An adult stegosaur shown as a hatchling, with the look picker.
+seedSprout({
+  name: 'Pebble',
+  saves: 1240,
+  species: 'stegosaur',
+  pattern: 'meadow',
+  look: 1,
+  hunger: 0.9,
+  thirst: 0.8,
+  love: 0.7,
+  needsAt: Date.now(),
+  hatchedAt: Date.now() - 40 * 24 * 60 * 60 * 1000,
+  streak: 12,
+});
+{
+  settings('Rosa Dark');
+  const { app, page } = await open(['src/nesting/hatch.ts']);
+  const sprout = page.locator('.pane').filter({ has: page.locator('.pane-header', { hasText: 'Sprout' }) });
+  await growSprout(page, 320);
+  await sprout.screenshot({ path: join(images, 'sprout-look.png') });
+  await app.close();
+}
 console.log('Screenshots written to images/');

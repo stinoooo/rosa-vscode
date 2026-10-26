@@ -52,6 +52,14 @@ function stageOf(saves) {
   return { index, name: STAGES[index].name, growth, next: next?.name ?? null };
 }
 
+// The stage the sprout is drawn at. Once it has reached a stage it can look
+// like that stage again; growth carries on underneath. No look, or a look it
+// has not reached, shows its real stage.
+function shownStage(state) {
+  const real = stageOf(state.saves).index;
+  return Number.isInteger(state.look) && state.look >= 1 && state.look < real ? state.look : real;
+}
+
 // Needs and love drop with wall time since they were last written. An egg
 // has none, so its needs stay full until it hatches.
 function needsAt(state, now) {
@@ -126,6 +134,7 @@ class SproutView {
       name: state.name,
       saves: state.saves,
       stage: stageOf(state.saves),
+      look: shownStage(state),
       errors: errorCount(),
       species: knownSpecies(state.species) ? state.species : 'sauropod',
       speciesChosen: knownSpecies(state.species),
@@ -168,6 +177,14 @@ class SproutView {
     this.refresh();
   }
 
+  // Picking its real stage clears the look, so it follows its growth again.
+  async setLook(index) {
+    const real = stageOf(this.state.saves).index;
+    if (!Number.isInteger(index) || index < 1 || index > real) return;
+    await this.update({ look: index < real ? index : undefined });
+    this.refresh();
+  }
+
   resolveWebviewView(view) {
     this.view = view;
     const media = (file) => view.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'media', file));
@@ -203,6 +220,10 @@ class SproutView {
     <h2 id="species-title">What's in the egg?</h2>
     <div class="species-list" id="species-list"></div>
   </section>
+  <section class="choices" id="looks" hidden>
+    <h2>Look</h2>
+    <div class="species-list" id="look-list"></div>
+  </section>
   <section class="choices" id="patterns" hidden>
     <h2>Pattern</h2>
     <div class="pattern-list" id="pattern-list"></div>
@@ -221,6 +242,7 @@ class SproutView {
       if (m.type === 'pet') this.pet();
       if (m.type === 'species') this.setSpecies(m.id);
       if (m.type === 'pattern') this.setPattern(m.id);
+      if (m.type === 'look') this.setLook(m.index);
     });
     // The animation pauses while the view is hidden, to spare the battery.
     view.onDidChangeVisibility(() => {
@@ -265,7 +287,10 @@ function activate(context) {
     status.text = `${icon} ${low ? (hunger < LOW ? 'Hungry' : 'Thirsty') : stage.next ? `${Math.floor(stage.growth * 100)}%` : stage.name}`;
     const growth = stage.next ? `${Math.floor(stage.growth * 100)}% of the way to ${stage.next}.` : 'Fully grown.';
     const needs = stage.index > 0 ? ` Food ${Math.round(hunger * 100)}%, water ${Math.round(thirst * 100)}%, love ${Math.round(love * 100)}%.` : '';
-    status.tooltip = `${name}, ${stage.name}. ${growth}${needs}`;
+    const shown = shownStage(sprout.state);
+    const lookName = STAGES[shown].name.toLowerCase();
+    const look = shown < stage.index ? ` Looks like ${/^[aeiou]/.test(lookName) ? 'an' : 'a'} ${lookName}.` : '';
+    status.tooltip = `${name}, ${stage.name}.${look} ${growth}${needs}`;
     status.show();
   };
   sprout.onChange = refreshStatus;
@@ -360,6 +385,25 @@ function activate(context) {
       if (pick) await sprout.setPattern(pick.id);
     }),
 
+    vscode.commands.registerCommand('rosa.sprout.chooseLook', async () => {
+      const real = stageOf(sprout.state.saves).index;
+      if (real < 2) {
+        const line = real === 0 ? 'still an egg' : 'a hatchling, its first stage';
+        vscode.window.showInformationMessage(`${sprout.state.name} is ${line}. Once it grows, you can show it at any stage it has reached.`);
+        return;
+      }
+      const shown = shownStage(sprout.state);
+      const pick = await vscode.window.showQuickPick(
+        STAGES.slice(1, real + 1).map((s, i) => ({
+          label: s.name,
+          description: [i + 1 === real ? 'Its real stage' : undefined, i + 1 === shown ? 'Current look' : undefined].filter(Boolean).join(', ') || undefined,
+          index: i + 1,
+        })),
+        { title: `Pick the stage ${sprout.state.name} looks like`, placeHolder: 'It keeps growing either way. Pick its real stage to follow its growth again.' },
+      );
+      if (pick) await sprout.setLook(pick.index);
+    }),
+
     vscode.commands.registerCommand('rosa.sprout.rename', async () => {
       const name = await vscode.window.showInputBox({
         title: 'Rename your sprout',
@@ -379,7 +423,7 @@ function activate(context) {
         'Start over with a new egg',
       );
       if (pick !== 'Start over with a new egg') return;
-      await sprout.update({ saves: 0, hunger: 1, thirst: 1, love: 1, species: undefined, hatchedAt: undefined, streak: 0, lastSaveDay: undefined });
+      await sprout.update({ saves: 0, hunger: 1, thirst: 1, love: 1, species: undefined, look: undefined, hatchedAt: undefined, streak: 0, lastSaveDay: undefined });
       sprout.refresh();
     }),
   );
@@ -397,4 +441,4 @@ function activate(context) {
 
 function deactivate() {}
 
-module.exports = { activate, deactivate, stageOf, needsAt, countsAsSave, nextStreak, dayOf };
+module.exports = { activate, deactivate, stageOf, shownStage, needsAt, countsAsSave, nextStreak, dayOf };

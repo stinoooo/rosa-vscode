@@ -186,6 +186,9 @@ main {
   justify-content: flex-end;
   padding: 8px 4px 6px;
 }
+.choices button[hidden] {
+  display: none;
+}
 .choices button:hover {
   background: var(--vscode-button-secondaryHoverBackground);
 }
