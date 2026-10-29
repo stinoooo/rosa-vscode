@@ -13,7 +13,13 @@ server.
 - **Rosa Product Icons**: the activity bar drawn for the Reserve. A nest of
   eggs for your files, a fern branch for source control, an amber drop for
   tests and a sauropod for your account.
-- **Rosa File Icons**: 54 file and folder icons that read on both themes.
+- **Rosa File Icons**: 120 file and folder icons that read on both themes,
+  for more than 750 extensions and 600 file names. They cover code in 50
+  languages, Godot projects, audio, video, 3D models, design files,
+  archives, documents, keys and the config files of most tools.
+- **Colors for more languages**: Godot (GDScript, shaders, scenes and
+  resources) and 25 languages VS Code shows as plain text on its own. See
+  [More languages](#more-languages).
 - **Your sprout**: a pixel dinosaur in the Explorer that hatches and grows as
   you work. Pick a sauropod, stegosaur, ceratopsian or raptor, and give it a
   pattern.
@@ -33,6 +39,25 @@ Each part works on its own, so you can keep the colors and use other icons,
 or the other way around.
 
 ![The product icons and the file icons](images/icons.png)
+
+## More languages
+
+VS Code ships colors for languages such as C, C++, C#, Go, Rust, Java,
+Python, PHP, Ruby, Lua and Swift, and Rosa colors all of those. For these
+languages, VS Code has no colors of its own, so Rosa brings them along:
+
+- **Godot**: GDScript (`.gd`), shaders (`.gdshader`), and scenes and
+  resources (`.tscn`, `.tres`, `project.godot`, `.import`).
+- **Code**: Kotlin, Dart, Zig, Scala, Elixir, Erlang, Haskell, OCaml, Elm,
+  Nim, Crystal, Gleam, Odin and Solidity.
+- **Shaders**: GLSL and WGSL.
+- **Config and data**: TOML, Nix, Terraform, HCL, CMake, Protocol Buffers,
+  GraphQL, Prisma and justfiles.
+
+Code blocks in Markdown get the same colors, such as a ` ```gdscript ` fence.
+The language ids match each language's own extension, so a language server
+such as the Godot one still finds your files. When you also install that
+extension, VS Code uses one of the two grammars, and Rosa colors either one.
 
 ## Your sprout
 
@@ -151,7 +176,7 @@ item off, or use its product icons instead.
 ```bash
 npm install
 npm run package
-code --install-extension rosa-theme-1.4.0.vsix
+code --install-extension rosa-theme-1.6.0.vsix
 ```
 
 Edit the sources, never the generated files, then run `npm run build`:
@@ -160,10 +185,14 @@ Edit the sources, never the generated files, then run `npm run build`:
 |---|---|---|
 | Theme colors | the palettes in `build.mjs` | `themes/` |
 | File icons | the drawings in `build-file-icons.mjs` | `icons/files/`, `file-icons.json` |
+| Language colors | the tables in `build-grammars.mjs`, and the Godot grammars in `syntaxes/` | `syntaxes/`, `languages/`, the languages in `package.json` |
 | Product icons | the line drawings in `icons/product/` | `fonts/rosa-icons.woff`, `product-icons.json`, `icon.png` |
 | The sprout | `extension.js`, `media/` | nothing, it runs as is |
 
-Each build stops when a color drops under its contrast minimum.
+Each build stops when a color drops under its contrast minimum, and the
+file icon build stops when a name is listed under two icons. `npm test`
+compiles every grammar the way VS Code does, colors sample code with Rosa
+Dark, and checks that file names find their icons.
 `npm run screenshots` retakes the pictures in `images/` from a real VS Code
 window with its own profile, so your setup is never touched.
 
