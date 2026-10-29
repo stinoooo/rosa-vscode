@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2f8k3x1qv7yd"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_abc"]
+
+[node name="Level" type="Node3D"]
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+script = ExtResource("1_abc")

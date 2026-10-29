@@ -1,0 +1,303 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "CMake",
+  "scopeName": "source.cmake",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#extra-0"
+    },
+    {
+      "include": "#extra-1"
+    },
+    {
+      "include": "#extra-2"
+    },
+    {
+      "include": "#extra-3"
+    },
+    {
+      "include": "#extra-4"
+    },
+    {
+      "include": "#extra-5"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#number"
+    },
+    {
+      "include": "#keyword"
+    },
+    {
+      "include": "#member"
+    },
+    {
+      "include": "#operator"
+    },
+    {
+      "include": "#punctuation"
+    }
+  ],
+  "repository": {
+    "comment-block": {
+      "name": "comment.block.cmake",
+      "begin": "#\\[\\[",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.begin.cmake"
+        }
+      },
+      "end": "\\]\\]",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.end.cmake"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#todo"
+        }
+      ]
+    },
+    "todo": {
+      "name": "keyword.other.todo.cmake",
+      "match": "\\b(?:TODO|FIXME|HACK|NOTE|XXX|BUG)\\b"
+    },
+    "comment": {
+      "patterns": [
+        {
+          "include": "#comment-block"
+        },
+        {
+          "name": "comment.line.cmake",
+          "begin": "#(?![\\[\\]])",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.cmake"
+            }
+          },
+          "end": "$",
+          "patterns": [
+            {
+              "include": "#todo"
+            }
+          ]
+        }
+      ]
+    },
+    "extra-0": {
+      "name": "variable.other.cmake",
+      "match": "\\$(?:ENV|CACHE)?\\{[^}]*\\}"
+    },
+    "extra-1": {
+      "name": "meta.embedded.generator.cmake",
+      "match": "\\$<[^>]*>"
+    },
+    "extra-2": {
+      "match": "(?i)\\b(if|elseif|else|endif|foreach|endforeach|while|endwhile|break|continue|return|block|endblock)\\s*(?=\\()",
+      "captures": {
+        "1": {
+          "name": "keyword.control.cmake"
+        }
+      }
+    },
+    "extra-3": {
+      "match": "(?i)\\b(function|endfunction|macro|endmacro)\\s*(\\()\\s*([A-Za-z_]\\w*)?",
+      "captures": {
+        "1": {
+          "name": "storage.type.function.cmake"
+        },
+        "2": {
+          "name": "punctuation.parenthesis.begin.cmake"
+        },
+        "3": {
+          "name": "entity.name.function.cmake"
+        }
+      }
+    },
+    "extra-4": {
+      "match": "\\b([A-Za-z_]\\w*)\\s*(?=\\()",
+      "captures": {
+        "1": {
+          "name": "support.function.cmake"
+        }
+      }
+    },
+    "extra-5": {
+      "name": "keyword.operator.word.cmake",
+      "match": "\\b(?:AND|OR|NOT|STREQUAL|EQUAL|LESS|GREATER|MATCHES|VERSION_LESS|VERSION_GREATER|VERSION_EQUAL|DEFINED|EXISTS|IN_LIST|IS_DIRECTORY|TARGET|COMMAND|POLICY)\\b"
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.cmake",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.cmake"
+            }
+          },
+          "end": "\"|$",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.cmake"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.cmake",
+              "match": "\\\\(?:[0-7]{1,3}|x[0-9A-Fa-f]{2}|u\\{?[0-9A-Fa-f]{1,6}\\}?|U[0-9A-Fa-f]{8}|.)"
+            },
+            {
+              "name": "meta.embedded.interpolation.cmake",
+              "begin": "\\$\\{",
+              "beginCaptures": {
+                "0": {
+                  "name": "punctuation.definition.template-expression.begin.cmake"
+                }
+              },
+              "end": "\\}",
+              "endCaptures": {
+                "0": {
+                  "name": "punctuation.definition.template-expression.end.cmake"
+                }
+              },
+              "contentName": "source.embedded.cmake",
+              "patterns": [
+                {
+                  "include": "#braces"
+                },
+                {
+                  "include": "$self"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.cmake",
+          "match": "\\b0[xX][0-9A-Fa-f][0-9A-Fa-f_]*(?:[uUlLiI]\\w*)?\\b"
+        },
+        {
+          "name": "constant.numeric.binary.cmake",
+          "match": "\\b0[bB][01][01_]*(?:[uUlLiI]\\w*)?\\b"
+        },
+        {
+          "name": "constant.numeric.octal.cmake",
+          "match": "\\b0[oO][0-7][0-7_]*\\b"
+        },
+        {
+          "name": "constant.numeric.float.cmake",
+          "match": "(?:\\b\\d[\\d_]*\\.\\d[\\d_]*|\\B\\.\\d[\\d_]*)(?:[eE][+-]?\\d+)?(?:[fFdDhH]|f16|f32|f64)?\\b|\\b\\d[\\d_]*[eE][+-]?\\d+(?:[fFdD])?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.cmake",
+          "match": "\\b\\d[\\d_]*(?:[uUlLnfFdDiI]\\w*)?\\b"
+        }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "name": "constant.language.cmake",
+          "match": "\\b(?:ON|OFF|TRUE|FALSE|YES|NO|Y|N)\\b"
+        }
+      ]
+    },
+    "member": {
+      "match": "(\\.)\\s*([A-Za-z_]\\w*)",
+      "captures": {
+        "1": {
+          "name": "punctuation.accessor.cmake"
+        },
+        "2": {
+          "name": "variable.other.property.cmake"
+        }
+      }
+    },
+    "operator": {
+      "patterns": [
+        {
+          "name": "keyword.operator.arrow.cmake",
+          "match": "=>|->|<-|\\|>"
+        },
+        {
+          "name": "keyword.operator.comparison.cmake",
+          "match": "===|!==|==|!=|<=|>="
+        },
+        {
+          "name": "keyword.operator.assignment.cmake",
+          "match": "(?:\\+|-|\\*|/|%|&|\\||\\^|<<|>>|\\?\\?)?=(?![=>])|:="
+        },
+        {
+          "name": "keyword.operator.logical.cmake",
+          "match": "&&|\\|\\||!(?!=)"
+        },
+        {
+          "name": "keyword.operator.range.cmake",
+          "match": "\\.\\.[.<=]?"
+        },
+        {
+          "name": "keyword.operator.arithmetic.cmake",
+          "match": "\\*\\*|\\+\\+|--|[-+*/%]"
+        },
+        {
+          "name": "keyword.operator.bitwise.cmake",
+          "match": "<<|>>|[&|^~]"
+        },
+        {
+          "name": "keyword.operator.comparison.cmake",
+          "match": "[<>]"
+        },
+        {
+          "name": "keyword.operator.cmake",
+          "match": "\\?|::|:|@"
+        }
+      ]
+    },
+    "braces": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.braces.begin.cmake"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.braces.end.cmake"
+        }
+      },
+      "patterns": [
+        {
+          "include": "$self"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.terminator.statement.cmake",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.separator.cmake",
+          "match": ","
+        },
+        {
+          "name": "punctuation.section.brackets.cmake",
+          "match": "[()\\[\\]{}]"
+        }
+      ]
+    }
+  }
+}
