@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Godot Resource",
+  "scopeName": "source.gdresource",
+  "fileTypes": ["tscn", "tres", "godot", "import", "gdextension", "escn"],
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#heading" },
+    { "include": "#property" },
+    { "include": "#value" }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.line.semicolon.gdresource",
+      "begin": "^\\s*(;)",
+      "beginCaptures": { "1": { "name": "punctuation.definition.comment.gdresource" } },
+      "end": "$"
+    },
+    "heading": {
+      "begin": "^\\s*(\\[)\\s*([A-Za-z_][\\w/.-]*)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.gdresource" },
+        "2": { "name": "entity.name.tag.section.gdresource" }
+      },
+      "end": "\\]",
+      "endCaptures": { "0": { "name": "punctuation.definition.tag.end.gdresource" } },
+      "name": "meta.section.gdresource",
+      "patterns": [
+        {
+          "match": "\\b([A-Za-z_][\\w-]*)\\s*(=)",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.gdresource" },
+            "2": { "name": "keyword.operator.assignment.gdresource" }
+          }
+        },
+        { "include": "#value" }
+      ]
+    },
+    "property": {
+      "match": "^\\s*(\"[^\"]*\"|[A-Za-z_0-9][\\w/.:@\\-]*)\\s*(=)",
+      "captures": {
+        "1": { "name": "support.type.property-name.gdresource" },
+        "2": { "name": "keyword.operator.assignment.gdresource" }
+      }
+    },
+    "value": {
+      "patterns": [
+        { "include": "#string" },
+        { "name": "constant.numeric.gdresource", "match": "-?\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b|-?\\binf(?:_neg)?\\b|\\bnan\\b" },
+        { "name": "constant.language.gdresource", "match": "\\b(true|false|null)\\b" },
+        {
+          "match": "\\b(ExtResource|SubResource|Resource)\\s*(?=\\()",
+          "captures": { "1": { "name": "support.function.resource.gdresource" } }
+        },
+        {
+          "match": "\\b([A-Z][A-Za-z0-9]*)\\s*(?=\\()",
+          "captures": { "1": { "name": "support.type.builtin.gdresource" } }
+        },
+        {
+          "match": "(\"[^\"]*\")\\s*(:)",
+          "captures": {
+            "1": { "name": "support.type.property-name.gdresource" },
+            "2": { "name": "punctuation.separator.dictionary.key-value.gdresource" }
+          }
+        },
+        { "name": "punctuation.separator.gdresource", "match": "[,:]" },
+        { "name": "punctuation.section.brackets.gdresource", "match": "[()\\[\\]{}]" }
+      ]
+    },
+    "string": {
+      "name": "string.quoted.double.gdresource",
+      "begin": "([&^])?(\")",
+      "beginCaptures": {
+        "1": { "name": "storage.type.string.gdresource" },
+        "2": { "name": "punctuation.definition.string.begin.gdresource" }
+      },
+      "end": "\"",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.gdresource" } },
+      "patterns": [
+        { "name": "constant.character.escape.gdresource", "match": "\\\\." },
+        { "name": "markup.underline.link.gdresource", "match": "\\b(?:res|user|uid)://[^\"\\s]*" }
+      ]
+    }
+  }
+}

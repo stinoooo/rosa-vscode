@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.6.0
+
+- Colors for Godot: GDScript, shaders, and scene and resource files.
+- Colors for 25 languages VS Code shows as plain text on its own: Kotlin,
+  Dart, Zig, Scala, Elixir, Erlang, Haskell, OCaml, Elm, Nim, Crystal, Gleam,
+  Odin, Solidity, GLSL, WGSL, TOML, Nix, Terraform, HCL, CMake, Protocol
+  Buffers, GraphQL, Prisma and justfiles. Their code blocks in Markdown get
+  colors too.
+- 66 new file icons, for 120 in all. They cover more than 750 extensions and
+  600 file names, against about 70 and 50 before: languages from C to Zig,
+  Godot files down to `.import` and `.uid`, and audio, video, 3D models,
+  design files, archives, disk images, documents, spreadsheets, slides, keys
+  and certificates, binaries and notebooks. Audio no longer shares the video
+  icon.
+- Many more folders get icons, also as the root of a workspace. Folders that
+  tools fill for you, such as `.godot`, `target` and `__pycache__`, are drawn
+  quieter.
+- Many more file names are recognized, such as the config files of common
+  tools, lockfiles of every package manager, and CI files.
+- Rosa colors more of what other languages' grammars and language servers
+  mark: built-in types, namespaces, preprocessor lines, attributes, Rust
+  lifetimes, `self`, fields, YAML and TOML keys, string interpolation, and
+  deprecated code, which is struck through.
+- The outline, breadcrumbs and suggestions show their icons in token colors.
+  Sticky scroll, diffs, merge conflicts, debugging, testing, coverage, chat,
+  notebooks and the source control graph are all in Rosa colors now.
+
 ## 1.5.0
 
 - Show your sprout at an earlier stage: once it has grown past a stage, pick

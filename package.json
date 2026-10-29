@@ -1,8 +1,8 @@
 {
   "name": "rosa-theme",
   "displayName": "Rosa Wildlife Reserve",
-  "description": "Warm Rosa Wildlife Reserve colors, file and product icons, and a pixel dinosaur that grows as you save.",
-  "version": "1.5.0",
+  "description": "Warm Rosa Wildlife Reserve colors, file icons for hundreds of file types, colors for Godot and 25 more languages, and a pixel dinosaur that grows as you save.",
+  "version": "1.6.0",
   "publisher": "rosa-realism",
   "license": "MIT",
   "icon": "icon.png",
@@ -27,6 +27,7 @@
   },
   "categories": [
     "Themes",
+    "Programming Languages",
     "Other"
   ],
   "keywords": [
@@ -41,7 +42,16 @@
     "pixel art",
     "pet",
     "dinosaur",
-    "rosa"
+    "rosa",
+    "godot",
+    "gdscript",
+    "gdshader",
+    "icon theme",
+    "syntax highlighting",
+    "kotlin",
+    "zig",
+    "toml",
+    "glsl"
   ],
   "main": "./extension.js",
   "activationEvents": [
@@ -49,7 +59,7 @@
   ],
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "build": "node build.mjs && node build-file-icons.mjs && node build-icons.mjs",
+    "build": "node build.mjs && node build-file-icons.mjs && node build-grammars.mjs && node build-icons.mjs",
     "package": "vsce package",
     "screenshots": "node screenshots/take.mjs && node screenshots/sheets.mjs",
     "publish:marketplace": "vsce publish",
@@ -58,13 +68,15 @@
   },
   "devDependencies": {
     "@resvg/resvg-js": "2.6.2",
+    "@vscode/vsce": "^4.0.0",
     "oslllo-svg-fixer": "^6.0.1",
+    "ovsx": "^1.3.0",
+    "playwright-core": "1.64.1",
     "svg2ttf": "^6.1.0",
     "svgicons2svgfont": "^16.0.0",
     "ttf2woff": "^3.0.0",
-    "@vscode/vsce": "^4.0.0",
-    "ovsx": "^1.3.0",
-    "playwright-core": "1.64.1"
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.2.0"
   },
   "contributes": {
     "themes": [
@@ -198,6 +210,571 @@
           "description": "Show what your sprout says in a speech bubble. Turn it off for a quieter sprout."
         }
       }
-    }
+    },
+    "languages": [
+      {
+        "id": "gdscript",
+        "aliases": [
+          "GDScript",
+          "gdscript"
+        ],
+        "extensions": [
+          ".gd"
+        ],
+        "configuration": "./languages/gdscript.json"
+      },
+      {
+        "id": "gdshader",
+        "aliases": [
+          "Godot Shader",
+          "gdshader"
+        ],
+        "extensions": [
+          ".gdshader",
+          ".gdshaderinc"
+        ],
+        "configuration": "./languages/gdshader.json"
+      },
+      {
+        "id": "gdresource",
+        "aliases": [
+          "Godot Resource",
+          "gdresource"
+        ],
+        "extensions": [
+          ".tscn",
+          ".tres",
+          ".godot",
+          ".import",
+          ".gdextension",
+          ".escn"
+        ],
+        "filenames": [
+          "export_presets.cfg",
+          "override.cfg"
+        ],
+        "configuration": "./languages/gdresource.json"
+      },
+      {
+        "id": "kotlin",
+        "aliases": [
+          "Kotlin",
+          "kotlin"
+        ],
+        "extensions": [
+          ".kt",
+          ".kts",
+          ".ktm"
+        ],
+        "configuration": "./languages/kotlin.json"
+      },
+      {
+        "id": "dart",
+        "aliases": [
+          "Dart",
+          "dart"
+        ],
+        "extensions": [
+          ".dart"
+        ],
+        "configuration": "./languages/dart.json"
+      },
+      {
+        "id": "zig",
+        "aliases": [
+          "Zig",
+          "zig"
+        ],
+        "extensions": [
+          ".zig",
+          ".zon"
+        ],
+        "configuration": "./languages/zig.json"
+      },
+      {
+        "id": "scala",
+        "aliases": [
+          "Scala",
+          "scala"
+        ],
+        "extensions": [
+          ".scala",
+          ".sc",
+          ".sbt",
+          ".mill"
+        ],
+        "configuration": "./languages/scala.json"
+      },
+      {
+        "id": "elixir",
+        "aliases": [
+          "Elixir",
+          "elixir"
+        ],
+        "extensions": [
+          ".ex",
+          ".exs"
+        ],
+        "configuration": "./languages/elixir.json"
+      },
+      {
+        "id": "erlang",
+        "aliases": [
+          "Erlang",
+          "erlang"
+        ],
+        "extensions": [
+          ".erl",
+          ".hrl",
+          ".escript",
+          ".app.src"
+        ],
+        "filenames": [
+          "rebar.config"
+        ],
+        "configuration": "./languages/erlang.json"
+      },
+      {
+        "id": "haskell",
+        "aliases": [
+          "Haskell",
+          "haskell"
+        ],
+        "extensions": [
+          ".hs",
+          ".lhs",
+          ".hs-boot",
+          ".hsig"
+        ],
+        "configuration": "./languages/haskell.json"
+      },
+      {
+        "id": "ocaml",
+        "aliases": [
+          "OCaml",
+          "ocaml"
+        ],
+        "extensions": [
+          ".ml",
+          ".mli",
+          ".mll",
+          ".mly",
+          ".eliom"
+        ],
+        "configuration": "./languages/ocaml.json"
+      },
+      {
+        "id": "elm",
+        "aliases": [
+          "Elm",
+          "elm"
+        ],
+        "extensions": [
+          ".elm"
+        ],
+        "configuration": "./languages/elm.json"
+      },
+      {
+        "id": "nim",
+        "aliases": [
+          "Nim",
+          "nim"
+        ],
+        "extensions": [
+          ".nim",
+          ".nims",
+          ".nimble"
+        ],
+        "configuration": "./languages/nim.json"
+      },
+      {
+        "id": "crystal",
+        "aliases": [
+          "Crystal",
+          "crystal"
+        ],
+        "extensions": [
+          ".cr",
+          ".ecr"
+        ],
+        "filenames": [
+          "shard.yml"
+        ],
+        "configuration": "./languages/crystal.json"
+      },
+      {
+        "id": "gleam",
+        "aliases": [
+          "Gleam",
+          "gleam"
+        ],
+        "extensions": [
+          ".gleam"
+        ],
+        "configuration": "./languages/gleam.json"
+      },
+      {
+        "id": "odin",
+        "aliases": [
+          "Odin",
+          "odin"
+        ],
+        "extensions": [
+          ".odin"
+        ],
+        "configuration": "./languages/odin.json"
+      },
+      {
+        "id": "solidity",
+        "aliases": [
+          "Solidity",
+          "solidity"
+        ],
+        "extensions": [
+          ".sol"
+        ],
+        "configuration": "./languages/solidity.json"
+      },
+      {
+        "id": "glsl",
+        "aliases": [
+          "GLSL",
+          "glsl"
+        ],
+        "extensions": [
+          ".glsl",
+          ".vert",
+          ".frag",
+          ".geom",
+          ".tesc",
+          ".tese",
+          ".comp",
+          ".vsh",
+          ".fsh",
+          ".rgen",
+          ".rchit",
+          ".rmiss",
+          ".rahit",
+          ".rint",
+          ".rcall",
+          ".task",
+          ".mesh"
+        ],
+        "configuration": "./languages/glsl.json"
+      },
+      {
+        "id": "wgsl",
+        "aliases": [
+          "WGSL",
+          "wgsl"
+        ],
+        "extensions": [
+          ".wgsl"
+        ],
+        "configuration": "./languages/wgsl.json"
+      },
+      {
+        "id": "nix",
+        "aliases": [
+          "Nix",
+          "nix"
+        ],
+        "extensions": [
+          ".nix"
+        ],
+        "configuration": "./languages/nix.json"
+      },
+      {
+        "id": "proto",
+        "aliases": [
+          "Protocol Buffers",
+          "proto"
+        ],
+        "extensions": [
+          ".proto"
+        ],
+        "configuration": "./languages/proto.json"
+      },
+      {
+        "id": "graphql",
+        "aliases": [
+          "GraphQL",
+          "graphql"
+        ],
+        "extensions": [
+          ".graphql",
+          ".gql",
+          ".graphqls"
+        ],
+        "configuration": "./languages/graphql.json"
+      },
+      {
+        "id": "terraform",
+        "aliases": [
+          "Terraform",
+          "terraform"
+        ],
+        "extensions": [
+          ".tf",
+          ".tfvars",
+          ".tftest.hcl"
+        ],
+        "configuration": "./languages/terraform.json"
+      },
+      {
+        "id": "hcl",
+        "aliases": [
+          "HCL",
+          "hcl"
+        ],
+        "extensions": [
+          ".hcl",
+          ".nomad",
+          ".pkr.hcl",
+          ".tfbackend"
+        ],
+        "configuration": "./languages/hcl.json"
+      },
+      {
+        "id": "cmake",
+        "aliases": [
+          "CMake",
+          "cmake"
+        ],
+        "extensions": [
+          ".cmake"
+        ],
+        "filenames": [
+          "CMakeLists.txt",
+          "CMakeCache.txt"
+        ],
+        "configuration": "./languages/cmake.json"
+      },
+      {
+        "id": "toml",
+        "aliases": [
+          "TOML",
+          "toml"
+        ],
+        "extensions": [
+          ".toml"
+        ],
+        "filenames": [
+          "Cargo.lock",
+          "Pipfile",
+          "poetry.lock",
+          "uv.lock",
+          "pdm.lock",
+          ".editorconfig.toml"
+        ],
+        "configuration": "./languages/toml.json"
+      },
+      {
+        "id": "prisma",
+        "aliases": [
+          "Prisma",
+          "prisma"
+        ],
+        "extensions": [
+          ".prisma"
+        ],
+        "configuration": "./languages/prisma.json"
+      },
+      {
+        "id": "just",
+        "aliases": [
+          "Just",
+          "just"
+        ],
+        "extensions": [
+          ".just"
+        ],
+        "filenames": [
+          "justfile",
+          "Justfile",
+          ".justfile"
+        ],
+        "configuration": "./languages/just.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "gdscript",
+        "scopeName": "source.gdscript",
+        "path": "./syntaxes/gdscript.tmLanguage.json"
+      },
+      {
+        "language": "gdshader",
+        "scopeName": "source.gdshader",
+        "path": "./syntaxes/gdshader.tmLanguage.json"
+      },
+      {
+        "language": "gdresource",
+        "scopeName": "source.gdresource",
+        "path": "./syntaxes/gdresource.tmLanguage.json"
+      },
+      {
+        "language": "kotlin",
+        "scopeName": "source.kotlin",
+        "path": "./syntaxes/kotlin.tmLanguage.json"
+      },
+      {
+        "language": "dart",
+        "scopeName": "source.dart",
+        "path": "./syntaxes/dart.tmLanguage.json"
+      },
+      {
+        "language": "zig",
+        "scopeName": "source.zig",
+        "path": "./syntaxes/zig.tmLanguage.json"
+      },
+      {
+        "language": "scala",
+        "scopeName": "source.scala",
+        "path": "./syntaxes/scala.tmLanguage.json"
+      },
+      {
+        "language": "elixir",
+        "scopeName": "source.elixir",
+        "path": "./syntaxes/elixir.tmLanguage.json"
+      },
+      {
+        "language": "erlang",
+        "scopeName": "source.erlang",
+        "path": "./syntaxes/erlang.tmLanguage.json"
+      },
+      {
+        "language": "haskell",
+        "scopeName": "source.haskell",
+        "path": "./syntaxes/haskell.tmLanguage.json"
+      },
+      {
+        "language": "ocaml",
+        "scopeName": "source.ocaml",
+        "path": "./syntaxes/ocaml.tmLanguage.json"
+      },
+      {
+        "language": "elm",
+        "scopeName": "source.elm",
+        "path": "./syntaxes/elm.tmLanguage.json"
+      },
+      {
+        "language": "nim",
+        "scopeName": "source.nim",
+        "path": "./syntaxes/nim.tmLanguage.json"
+      },
+      {
+        "language": "crystal",
+        "scopeName": "source.crystal",
+        "path": "./syntaxes/crystal.tmLanguage.json"
+      },
+      {
+        "language": "gleam",
+        "scopeName": "source.gleam",
+        "path": "./syntaxes/gleam.tmLanguage.json"
+      },
+      {
+        "language": "odin",
+        "scopeName": "source.odin",
+        "path": "./syntaxes/odin.tmLanguage.json"
+      },
+      {
+        "language": "solidity",
+        "scopeName": "source.solidity",
+        "path": "./syntaxes/solidity.tmLanguage.json"
+      },
+      {
+        "language": "glsl",
+        "scopeName": "source.glsl",
+        "path": "./syntaxes/glsl.tmLanguage.json"
+      },
+      {
+        "language": "wgsl",
+        "scopeName": "source.wgsl",
+        "path": "./syntaxes/wgsl.tmLanguage.json"
+      },
+      {
+        "language": "nix",
+        "scopeName": "source.nix",
+        "path": "./syntaxes/nix.tmLanguage.json"
+      },
+      {
+        "language": "proto",
+        "scopeName": "source.proto",
+        "path": "./syntaxes/proto.tmLanguage.json"
+      },
+      {
+        "language": "graphql",
+        "scopeName": "source.graphql",
+        "path": "./syntaxes/graphql.tmLanguage.json"
+      },
+      {
+        "language": "terraform",
+        "scopeName": "source.terraform",
+        "path": "./syntaxes/terraform.tmLanguage.json"
+      },
+      {
+        "language": "hcl",
+        "scopeName": "source.hcl",
+        "path": "./syntaxes/hcl.tmLanguage.json"
+      },
+      {
+        "language": "cmake",
+        "scopeName": "source.cmake",
+        "path": "./syntaxes/cmake.tmLanguage.json"
+      },
+      {
+        "language": "toml",
+        "scopeName": "source.toml",
+        "path": "./syntaxes/toml.tmLanguage.json"
+      },
+      {
+        "language": "prisma",
+        "scopeName": "source.prisma",
+        "path": "./syntaxes/prisma.tmLanguage.json"
+      },
+      {
+        "language": "just",
+        "scopeName": "source.just",
+        "path": "./syntaxes/just.tmLanguage.json"
+      },
+      {
+        "scopeName": "markdown.rosa.codeblock",
+        "path": "./syntaxes/markdown-codeblocks.tmLanguage.json",
+        "injectTo": [
+          "text.html.markdown"
+        ],
+        "embeddedLanguages": {
+          "meta.embedded.block.gdscript": "gdscript",
+          "meta.embedded.block.gdshader": "gdshader",
+          "meta.embedded.block.gdresource": "gdresource",
+          "meta.embedded.block.kotlin": "kotlin",
+          "meta.embedded.block.dart": "dart",
+          "meta.embedded.block.zig": "zig",
+          "meta.embedded.block.scala": "scala",
+          "meta.embedded.block.elixir": "elixir",
+          "meta.embedded.block.erlang": "erlang",
+          "meta.embedded.block.haskell": "haskell",
+          "meta.embedded.block.ocaml": "ocaml",
+          "meta.embedded.block.elm": "elm",
+          "meta.embedded.block.nim": "nim",
+          "meta.embedded.block.crystal": "crystal",
+          "meta.embedded.block.gleam": "gleam",
+          "meta.embedded.block.odin": "odin",
+          "meta.embedded.block.solidity": "solidity",
+          "meta.embedded.block.glsl": "glsl",
+          "meta.embedded.block.wgsl": "wgsl",
+          "meta.embedded.block.nix": "nix",
+          "meta.embedded.block.proto": "proto",
+          "meta.embedded.block.graphql": "graphql",
+          "meta.embedded.block.terraform": "terraform",
+          "meta.embedded.block.hcl": "hcl",
+          "meta.embedded.block.cmake": "cmake",
+          "meta.embedded.block.toml": "toml",
+          "meta.embedded.block.prisma": "prisma",
+          "meta.embedded.block.just": "just"
+        }
+      }
+    ]
   }
 }

@@ -1,5 +1,6 @@
 build.mjs
 build-file-icons.mjs
+build-grammars.mjs
 build-icons.mjs
 icons/product/**
 node_modules/**

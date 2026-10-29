@@ -1,0 +1,346 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Crystal",
+  "scopeName": "source.crystal",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#extra-0"
+    },
+    {
+      "include": "#extra-1"
+    },
+    {
+      "include": "#extra-2"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#function-definition"
+    },
+    {
+      "include": "#type-definition"
+    },
+    {
+      "include": "#number"
+    },
+    {
+      "include": "#keyword"
+    },
+    {
+      "include": "#builtin"
+    },
+    {
+      "include": "#constant-caps"
+    },
+    {
+      "include": "#type-name"
+    },
+    {
+      "include": "#call"
+    },
+    {
+      "include": "#member"
+    },
+    {
+      "include": "#operator"
+    },
+    {
+      "include": "#punctuation"
+    }
+  ],
+  "repository": {
+    "todo": {
+      "name": "keyword.other.todo.crystal",
+      "match": "\\b(?:TODO|FIXME|HACK|NOTE|XXX|BUG)\\b"
+    },
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.crystal",
+          "begin": "#",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.crystal"
+            }
+          },
+          "end": "$",
+          "patterns": [
+            {
+              "include": "#todo"
+            }
+          ]
+        }
+      ]
+    },
+    "extra-0": {
+      "name": "constant.other.symbol.crystal",
+      "match": "(?<![\\w:]):[A-Za-z_]\\w*[?!]?"
+    },
+    "extra-1": {
+      "name": "variable.other.readwrite.instance.crystal",
+      "match": "@@?[a-z_]\\w*"
+    },
+    "extra-2": {
+      "name": "meta.decorator.crystal entity.name.function.decorator.crystal",
+      "match": "@\\[[^\\]]*\\]"
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.crystal",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.crystal"
+            }
+          },
+          "end": "\"|$",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.crystal"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.crystal",
+              "match": "\\\\(?:[0-7]{1,3}|x[0-9A-Fa-f]{2}|u\\{?[0-9A-Fa-f]{1,6}\\}?|U[0-9A-Fa-f]{8}|.)"
+            },
+            {
+              "name": "meta.embedded.interpolation.crystal",
+              "begin": "#\\{",
+              "beginCaptures": {
+                "0": {
+                  "name": "punctuation.definition.template-expression.begin.crystal"
+                }
+              },
+              "end": "\\}",
+              "endCaptures": {
+                "0": {
+                  "name": "punctuation.definition.template-expression.end.crystal"
+                }
+              },
+              "contentName": "source.embedded.crystal",
+              "patterns": [
+                {
+                  "include": "#braces"
+                },
+                {
+                  "include": "$self"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.crystal",
+          "begin": "'",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.crystal"
+            }
+          },
+          "end": "'|$",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.crystal"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.crystal",
+              "match": "\\\\(?:[0-7]{1,3}|x[0-9A-Fa-f]{2}|u\\{?[0-9A-Fa-f]{1,6}\\}?|U[0-9A-Fa-f]{8}|.)"
+            }
+          ]
+        }
+      ]
+    },
+    "function-definition": {
+      "match": "\\b(def|macro|fun)\\b\\s+(?:<[^>]*>\\s*)?(?:[A-Za-z_][\\w.]*\\.)?([A-Za-z_][\\w!?']*)",
+      "captures": {
+        "1": {
+          "name": "storage.type.function.crystal"
+        },
+        "2": {
+          "name": "entity.name.function.crystal"
+        }
+      }
+    },
+    "type-definition": {
+      "match": "\\b(class|module|struct|enum|lib|alias|annotation)\\b\\s+([A-Za-z_][\\w.]*)",
+      "captures": {
+        "1": {
+          "name": "storage.type.crystal"
+        },
+        "2": {
+          "name": "entity.name.type.crystal"
+        }
+      }
+    },
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.crystal",
+          "match": "\\b0[xX][0-9A-Fa-f][0-9A-Fa-f_]*(?:[uUlLiI]\\w*)?\\b"
+        },
+        {
+          "name": "constant.numeric.binary.crystal",
+          "match": "\\b0[bB][01][01_]*(?:[uUlLiI]\\w*)?\\b"
+        },
+        {
+          "name": "constant.numeric.octal.crystal",
+          "match": "\\b0[oO][0-7][0-7_]*\\b"
+        },
+        {
+          "name": "constant.numeric.float.crystal",
+          "match": "(?:\\b\\d[\\d_]*\\.\\d[\\d_]*|\\B\\.\\d[\\d_]*)(?:[eE][+-]?\\d+)?(?:[fFdDhH]|f16|f32|f64)?\\b|\\b\\d[\\d_]*[eE][+-]?\\d+(?:[fFdD])?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.crystal",
+          "match": "\\b\\d[\\d_]*(?:[uUlLnfFdDiI]\\w*)?\\b"
+        }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "name": "keyword.control.crystal",
+          "match": "\\b(?:if|elsif|else|unless|case|when|in|while|until|begin|rescue|ensure|raise|return|break|next|yield|do|end|then|select)\\b"
+        },
+        {
+          "name": "storage.type.crystal",
+          "match": "\\b(?:def|class|module|struct|enum|lib|fun|macro|alias|annotation|require|include|extend|property|getter|setter|record|union|type)\\b"
+        },
+        {
+          "name": "storage.modifier.crystal",
+          "match": "\\b(?:private|protected|abstract|forall)\\b"
+        },
+        {
+          "name": "keyword.operator.word.crystal",
+          "match": "(?<![\\w.])(?:is_a\\?|responds_to\\?|nil\\?|as|as\\?|typeof|sizeof|pointerof)(?![\\w?])"
+        },
+        {
+          "name": "constant.language.crystal",
+          "match": "\\b(?:true|false|nil)\\b"
+        },
+        {
+          "name": "variable.language.crystal",
+          "match": "\\b(?:self|super)\\b"
+        }
+      ]
+    },
+    "builtin": {
+      "match": "\\b(puts|print|p|pp|raise|spawn|sleep|loop)\\b(?=\\s*\\()",
+      "captures": {
+        "1": {
+          "name": "support.function.builtin.crystal"
+        }
+      }
+    },
+    "constant-caps": {
+      "name": "constant.other.caps.crystal",
+      "match": "\\b[A-Z][A-Z0-9_]*[A-Z0-9]\\b(?![a-z(])"
+    },
+    "type-name": {
+      "name": "entity.name.type.crystal",
+      "match": "\\b[A-Z][A-Za-z0-9_]*[a-z][A-Za-z0-9_]*\\b"
+    },
+    "call": {
+      "match": "\\b([A-Za-z_][\\w!?]*)\\s*(?=\\()",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.crystal"
+        }
+      }
+    },
+    "member": {
+      "match": "(\\.)\\s*([A-Za-z_]\\w*)",
+      "captures": {
+        "1": {
+          "name": "punctuation.accessor.crystal"
+        },
+        "2": {
+          "name": "variable.other.property.crystal"
+        }
+      }
+    },
+    "operator": {
+      "patterns": [
+        {
+          "name": "keyword.operator.arrow.crystal",
+          "match": "=>|->|<-|\\|>"
+        },
+        {
+          "name": "keyword.operator.comparison.crystal",
+          "match": "===|!==|==|!=|<=|>="
+        },
+        {
+          "name": "keyword.operator.assignment.crystal",
+          "match": "(?:\\+|-|\\*|/|%|&|\\||\\^|<<|>>|\\?\\?)?=(?![=>])|:="
+        },
+        {
+          "name": "keyword.operator.logical.crystal",
+          "match": "&&|\\|\\||!(?!=)"
+        },
+        {
+          "name": "keyword.operator.range.crystal",
+          "match": "\\.\\.[.<=]?"
+        },
+        {
+          "name": "keyword.operator.arithmetic.crystal",
+          "match": "\\*\\*|\\+\\+|--|[-+*/%]"
+        },
+        {
+          "name": "keyword.operator.bitwise.crystal",
+          "match": "<<|>>|[&|^~]"
+        },
+        {
+          "name": "keyword.operator.comparison.crystal",
+          "match": "[<>]"
+        },
+        {
+          "name": "keyword.operator.crystal",
+          "match": "\\?|::|:|@"
+        }
+      ]
+    },
+    "braces": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.braces.begin.crystal"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.braces.end.crystal"
+        }
+      },
+      "patterns": [
+        {
+          "include": "$self"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.terminator.statement.crystal",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.separator.crystal",
+          "match": ","
+        },
+        {
+          "name": "punctuation.section.brackets.crystal",
+          "match": "[()\\[\\]{}]"
+        }
+      ]
+    }
+  }
+}
