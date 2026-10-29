@@ -1,0 +1,813 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "GDScript",
+  "scopeName": "source.gdscript",
+  "fileTypes": [
+    "gd"
+  ],
+  "patterns": [
+    {
+      "include": "#statement"
+    }
+  ],
+  "repository": {
+    "statement": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#annotation"
+        },
+        {
+          "include": "#class-name"
+        },
+        {
+          "include": "#extends"
+        },
+        {
+          "include": "#class"
+        },
+        {
+          "include": "#enum"
+        },
+        {
+          "include": "#signal"
+        },
+        {
+          "include": "#function"
+        },
+        {
+          "include": "#lambda"
+        },
+        {
+          "include": "#constant-declaration"
+        },
+        {
+          "include": "#variable"
+        },
+        {
+          "include": "#accessor"
+        },
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "expression": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#node-path"
+        },
+        {
+          "include": "#number"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "include": "#constant"
+        },
+        {
+          "include": "#return-type"
+        },
+        {
+          "include": "#operator"
+        },
+        {
+          "include": "#member"
+        },
+        {
+          "include": "#builtin-type"
+        },
+        {
+          "include": "#builtin-function"
+        },
+        {
+          "include": "#caps-constant"
+        },
+        {
+          "include": "#class-reference"
+        },
+        {
+          "include": "#call"
+        },
+        {
+          "include": "#parens"
+        },
+        {
+          "include": "#brackets"
+        },
+        {
+          "include": "#braces"
+        },
+        {
+          "include": "#punctuation"
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.documentation.gdscript",
+          "begin": "##",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.gdscript"
+            }
+          },
+          "end": "$",
+          "patterns": [
+            {
+              "name": "keyword.other.documentation.gdscript",
+              "match": "@(tutorial|deprecated|experimental)\\b"
+            },
+            {
+              "name": "markup.raw.gdscript",
+              "match": "\\[(?:code|codeblock)\\].*?\\[/(?:code|codeblock)\\]"
+            },
+            {
+              "name": "entity.name.tag.bbcode.gdscript",
+              "match": "\\[/?(?:b|i|u|s|code|codeblock|codeblocks|br|kbd|url|center|color|font|img|param|member|method|signal|constant|enum|annotation|theme_item|constructor|operator)(?:[= ][^\\]]*)?\\]"
+            }
+          ]
+        },
+        {
+          "name": "comment.line.number-sign.gdscript",
+          "begin": "#",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.gdscript"
+            }
+          },
+          "end": "$",
+          "patterns": [
+            {
+              "name": "keyword.other.todo.gdscript",
+              "match": "\\b(TODO|FIXME|HACK|NOTE|XXX|BUG|WARNING)\\b"
+            }
+          ]
+        }
+      ]
+    },
+    "annotation": {
+      "match": "(@)([A-Za-z_]\\w*)",
+      "captures": {
+        "0": {
+          "name": "meta.decorator.gdscript"
+        },
+        "1": {
+          "name": "punctuation.decorator.gdscript"
+        },
+        "2": {
+          "name": "entity.name.function.decorator.gdscript"
+        }
+      }
+    },
+    "class-name": {
+      "match": "\\b(class_name)\\s+([A-Za-z_]\\w*)",
+      "captures": {
+        "1": {
+          "name": "storage.type.class.gdscript"
+        },
+        "2": {
+          "name": "entity.name.type.class.gdscript"
+        }
+      }
+    },
+    "extends": {
+      "match": "\\b(extends)\\s+(?:([A-Za-z_][\\w.]*)|(\"[^\"]*\"|'[^']*'))",
+      "captures": {
+        "1": {
+          "name": "storage.modifier.extends.gdscript"
+        },
+        "2": {
+          "name": "entity.other.inherited-class.gdscript"
+        },
+        "3": {
+          "name": "string.quoted.gdscript"
+        }
+      }
+    },
+    "class": {
+      "match": "\\b(class)\\s+([A-Za-z_]\\w*)",
+      "captures": {
+        "1": {
+          "name": "storage.type.class.gdscript"
+        },
+        "2": {
+          "name": "entity.name.type.class.gdscript"
+        }
+      }
+    },
+    "enum": {
+      "match": "\\b(enum)(?:\\s+([A-Za-z_]\\w*))?",
+      "captures": {
+        "1": {
+          "name": "storage.type.enum.gdscript"
+        },
+        "2": {
+          "name": "entity.name.type.enum.gdscript"
+        }
+      }
+    },
+    "signal": {
+      "begin": "\\b(signal)\\s+([A-Za-z_]\\w*)\\s*(\\()?",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.type.signal.gdscript"
+        },
+        "2": {
+          "name": "entity.name.function.signal.gdscript"
+        },
+        "3": {
+          "name": "punctuation.definition.parameters.begin.gdscript"
+        }
+      },
+      "end": "(\\))|$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.parameters.end.gdscript"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#parameters"
+        }
+      ]
+    },
+    "function": {
+      "begin": "\\b(?:(static)\\s+)?(func)\\s+([A-Za-z_]\\w*)\\s*(\\()",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.modifier.static.gdscript"
+        },
+        "2": {
+          "name": "storage.type.function.gdscript"
+        },
+        "3": {
+          "name": "entity.name.function.gdscript"
+        },
+        "4": {
+          "name": "punctuation.definition.parameters.begin.gdscript"
+        }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.parameters.end.gdscript"
+        }
+      },
+      "name": "meta.function.gdscript",
+      "patterns": [
+        {
+          "include": "#parameters"
+        }
+      ]
+    },
+    "lambda": {
+      "begin": "\\b(func)\\s*(\\()",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.type.function.lambda.gdscript"
+        },
+        "2": {
+          "name": "punctuation.definition.parameters.begin.gdscript"
+        }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.parameters.end.gdscript"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#parameters"
+        }
+      ]
+    },
+    "parameters": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "begin": "(:?=)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.operator.assignment.gdscript"
+            }
+          },
+          "end": "(?=[,)])",
+          "patterns": [
+            {
+              "include": "#expression"
+            }
+          ]
+        },
+        {
+          "match": "\\b([A-Za-z_]\\w*)\\s*(?:(:)\\s*([A-Za-z_][\\w.]*)(?:\\[([A-Za-z_][\\w.]*)\\])?)?",
+          "captures": {
+            "1": {
+              "name": "variable.parameter.gdscript"
+            },
+            "2": {
+              "name": "punctuation.separator.annotation.gdscript"
+            },
+            "3": {
+              "patterns": [
+                {
+                  "include": "#type-name"
+                }
+              ]
+            },
+            "4": {
+              "patterns": [
+                {
+                  "include": "#type-name"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "punctuation.separator.parameters.gdscript",
+          "match": ","
+        }
+      ]
+    },
+    "variable": {
+      "match": "\\b(?:(static)\\s+)?(var)\\s+([A-Za-z_]\\w*)(?:\\s*(:)(?!=)\\s*([A-Za-z_][\\w.]*)(?:\\[([A-Za-z_][\\w.]*)(?:\\s*,\\s*([A-Za-z_][\\w.]*))?\\])?)?",
+      "captures": {
+        "1": {
+          "name": "storage.modifier.static.gdscript"
+        },
+        "2": {
+          "name": "storage.type.var.gdscript"
+        },
+        "3": {
+          "name": "variable.other.declaration.gdscript"
+        },
+        "4": {
+          "name": "punctuation.separator.annotation.gdscript"
+        },
+        "5": {
+          "patterns": [
+            {
+              "include": "#type-name"
+            }
+          ]
+        },
+        "6": {
+          "patterns": [
+            {
+              "include": "#type-name"
+            }
+          ]
+        },
+        "7": {
+          "patterns": [
+            {
+              "include": "#type-name"
+            }
+          ]
+        }
+      }
+    },
+    "accessor": {
+      "match": "^\\s*(get|set)\\b(?=\\s*[:(])",
+      "captures": {
+        "1": {
+          "name": "storage.type.function.accessor.gdscript"
+        }
+      }
+    },
+    "return-type": {
+      "match": "(->)\\s*([A-Za-z_][\\w.]*)(?:\\[([A-Za-z_][\\w.]*)\\])?",
+      "captures": {
+        "1": {
+          "name": "punctuation.separator.annotation.result.gdscript"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#type-name"
+            }
+          ]
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#type-name"
+            }
+          ]
+        }
+      }
+    },
+    "type-name": {
+      "patterns": [
+        {
+          "include": "#builtin-type"
+        },
+        {
+          "name": "entity.name.type.gdscript",
+          "match": "[A-Za-z_][\\w.]*"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.triple.gdscript",
+          "begin": "(r)?(\"\"\"|''')",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.string.gdscript"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.gdscript"
+            }
+          },
+          "end": "\\2",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.gdscript"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#string-content"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.double.gdscript",
+          "begin": "([&^]|r)?(\")",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.string.gdscript"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.gdscript"
+            }
+          },
+          "end": "\"|$",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.gdscript"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#string-content"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.gdscript",
+          "begin": "([&^]|r)?(')",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.string.gdscript"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.gdscript"
+            }
+          },
+          "end": "'|$",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.gdscript"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#string-content"
+            }
+          ]
+        }
+      ]
+    },
+    "string-content": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.gdscript",
+          "match": "\\\\(?:[\\\\'\"abfnrtv]|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{6}|\\n)"
+        },
+        {
+          "name": "constant.other.placeholder.gdscript",
+          "match": "%[-+0 #]*(?:\\d+|\\*)?(?:\\.(?:\\d+|\\*))?[sdioxXfcv%]"
+        },
+        {
+          "name": "constant.other.placeholder.gdscript",
+          "match": "\\{[A-Za-z_0-9]*\\}"
+        }
+      ]
+    },
+    "node-path": {
+      "patterns": [
+        {
+          "match": "(\\$)(\"[^\"]*\"|'[^']*'|[A-Za-z_][\\w/]*)",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.node-path.gdscript"
+            },
+            "2": {
+              "name": "string.unquoted.node-path.gdscript"
+            }
+          },
+          "name": "meta.node-path.gdscript"
+        },
+        {
+          "match": "(?<![\\w)\\]}])(?<!\\w\\s)(?<![)\\]}]\\s)(%)([A-Za-z_]\\w*)",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.node-path.gdscript"
+            },
+            "2": {
+              "name": "string.unquoted.node-path.unique.gdscript"
+            }
+          }
+        }
+      ]
+    },
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.gdscript",
+          "match": "\\b0x[0-9A-Fa-f_]+\\b"
+        },
+        {
+          "name": "constant.numeric.binary.gdscript",
+          "match": "\\b0b[01_]+\\b"
+        },
+        {
+          "name": "constant.numeric.float.gdscript",
+          "match": "(?:\\b\\d[\\d_]*\\.[\\d_]*|\\.\\d[\\d_]*)(?:[eE][+-]?\\d+)?|\\b\\d[\\d_]*[eE][+-]?\\d+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.gdscript",
+          "match": "\\b\\d[\\d_]*\\b"
+        }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "name": "keyword.control.flow.gdscript",
+          "match": "\\b(if|elif|else|for|while|match|when|break|continue|pass|return|await|yield|breakpoint)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.gdscript",
+          "match": "\\b(and|or|not|in|is|as)\\b"
+        },
+        {
+          "name": "storage.modifier.gdscript",
+          "match": "\\b(static|onready|export|tool|remote|master|puppet|remotesync|mastersync|puppetsync|setget)\\b"
+        },
+        {
+          "name": "storage.type.gdscript",
+          "match": "\\b(var|const|func|class|class_name|extends|signal|enum)\\b"
+        },
+        {
+          "name": "keyword.other.assert.gdscript",
+          "match": "\\bassert\\b"
+        },
+        {
+          "name": "variable.language.self.gdscript",
+          "match": "\\bself\\b"
+        },
+        {
+          "name": "variable.language.super.gdscript",
+          "match": "\\bsuper\\b"
+        }
+      ]
+    },
+    "constant": {
+      "name": "constant.language.gdscript",
+      "match": "\\b(true|false|null|PI|TAU|INF|NAN)\\b"
+    },
+    "operator": {
+      "patterns": [
+        {
+          "name": "keyword.operator.assignment.gdscript",
+          "match": ":=|\\+=|-=|\\*\\*=|\\*=|/=|%=|&=|\\|=|\\^=|<<=|>>=|=(?!=)"
+        },
+        {
+          "name": "keyword.operator.comparison.gdscript",
+          "match": "==|!=|<=|>=|<|>"
+        },
+        {
+          "name": "keyword.operator.logical.gdscript",
+          "match": "&&|\\|\\||!"
+        },
+        {
+          "name": "keyword.operator.arithmetic.gdscript",
+          "match": "\\*\\*|[-+*/%]"
+        },
+        {
+          "name": "keyword.operator.bitwise.gdscript",
+          "match": "<<|>>|[&|^~]"
+        }
+      ]
+    },
+    "member": {
+      "patterns": [
+        {
+          "match": "(\\.)\\s*([A-Za-z_]\\w*)\\s*(?=\\()",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.gdscript"
+            },
+            "2": {
+              "name": "entity.name.function.method.gdscript"
+            }
+          }
+        },
+        {
+          "match": "(\\.)\\s*([A-Z][A-Z0-9_]*)\\b(?![a-z])",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.gdscript"
+            },
+            "2": {
+              "name": "constant.other.caps.gdscript"
+            }
+          }
+        },
+        {
+          "match": "(\\.)\\s*([A-Za-z_]\\w*)",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.gdscript"
+            },
+            "2": {
+              "name": "variable.other.property.gdscript"
+            }
+          }
+        }
+      ]
+    },
+    "builtin-type": {
+      "patterns": [
+        {
+          "name": "support.type.primitive.gdscript",
+          "match": "\\b(void|bool|int|float)\\b"
+        },
+        {
+          "name": "support.type.builtin.gdscript",
+          "match": "\\b(String|StringName|NodePath|Vector2i?|Vector3i?|Vector4i?|Rect2i?|Transform2D|Transform3D|Plane|Quaternion|AABB|Basis|Projection|Color|RID|Object|Callable|Signal|Dictionary|Array|Variant|Packed(?:Byte|Int32|Int64|Float32|Float64|String|Vector2|Vector3|Vector4|Color)Array)\\b"
+        }
+      ]
+    },
+    "builtin-function": {
+      "match": "\\b(print|prints|printt|printerr|printraw|print_debug|print_rich|print_stack|push_error|push_warning|preload|load|range|len|str|typeof|type_string|is_instance_of|is_instance_valid|instance_from_id|weakref|abs|absf|absi|ceil|ceilf|ceili|floor|floorf|floori|round|roundf|roundi|sign|signf|signi|min|minf|mini|max|maxf|maxi|clamp|clampf|clampi|lerp|lerpf|lerp_angle|inverse_lerp|remap|smoothstep|move_toward|snapped|snappedf|snappedi|wrap|wrapf|wrapi|pingpong|sqrt|pow|exp|log|sin|cos|tan|asin|acos|atan|atan2|sinh|cosh|tanh|deg_to_rad|rad_to_deg|linear_to_db|db_to_linear|fmod|fposmod|posmod|is_nan|is_inf|is_zero_approx|is_equal_approx|is_finite|randi|randf|randi_range|randf_range|randfn|randomize|seed|rand_from_seed|hash|var_to_str|str_to_var|var_to_bytes|bytes_to_var|convert|get_stack|char|ord|rid_from_int64|rid_allocate_id|error_string|bezier_interpolate|bezier_derivative|cubic_interpolate|ease|step_decimals|nearest_po2|instance_from_id|Color8|assert)\\b(?=\\s*\\()",
+      "name": "support.function.builtin.gdscript"
+    },
+    "caps-constant": {
+      "name": "constant.other.caps.gdscript",
+      "match": "\\b[A-Z][A-Z0-9_]*[A-Z0-9]\\b(?![a-z])"
+    },
+    "class-reference": {
+      "name": "entity.name.type.class.gdscript",
+      "match": "\\b_?[A-Z][A-Za-z0-9_]*[a-z][A-Za-z0-9_]*\\b|\\b[A-Z][A-Z0-9]*\\d[A-Z]?\\b"
+    },
+    "call": {
+      "match": "\\b([A-Za-z_]\\w*)\\s*(?=\\()",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.call.gdscript"
+        }
+      }
+    },
+    "parens": {
+      "begin": "\\(",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.parenthesis.begin.gdscript"
+        }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.parenthesis.end.gdscript"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#lambda"
+        },
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "brackets": {
+      "begin": "\\[",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.list.begin.gdscript"
+        }
+      },
+      "end": "\\]",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.list.end.gdscript"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "braces": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.dict.begin.gdscript"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.dict.end.gdscript"
+        }
+      },
+      "patterns": [
+        {
+          "match": "\\b([A-Za-z_]\\w*)\\s*(?==(?!=))",
+          "captures": {
+            "1": {
+              "name": "variable.other.property.gdscript"
+            }
+          }
+        },
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.element.gdscript",
+          "match": ","
+        },
+        {
+          "name": "punctuation.separator.colon.gdscript",
+          "match": ":"
+        },
+        {
+          "name": "punctuation.terminator.statement.gdscript",
+          "match": ";"
+        }
+      ]
+    },
+    "constant-declaration": {
+      "match": "\\b(?:(static)\\s+)?(const)\\s+([A-Za-z_]\\w*)(?:\\s*(:)(?!=)\\s*([A-Za-z_][\\w.]*)(?:\\[([A-Za-z_][\\w.]*)(?:\\s*,\\s*([A-Za-z_][\\w.]*))?\\])?)?",
+      "captures": {
+        "1": {
+          "name": "storage.modifier.static.gdscript"
+        },
+        "2": {
+          "name": "storage.type.const.gdscript"
+        },
+        "3": {
+          "name": "entity.name.constant.gdscript"
+        },
+        "4": {
+          "name": "punctuation.separator.annotation.gdscript"
+        },
+        "5": {
+          "patterns": [
+            {
+              "include": "#type-name"
+            }
+          ]
+        },
+        "6": {
+          "patterns": [
+            {
+              "include": "#type-name"
+            }
+          ]
+        },
+        "7": {
+          "patterns": [
+            {
+              "include": "#type-name"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
